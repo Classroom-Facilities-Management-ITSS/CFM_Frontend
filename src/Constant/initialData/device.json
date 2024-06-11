@@ -1,0 +1,902 @@
+[
+	{
+		"id": 789,
+		"name": "Laptop computer",
+		"version": 1,
+		"count": 27,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 3
+	},
+	{
+		"id": 935,
+		"name": "Interactive whiteboard",
+		"version": 2,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 1",
+		"classID": 24
+	},
+	{
+		"id": 151,
+		"name": "Projector",
+		"version": 1,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 1",
+		"classID": 30
+	},
+	{
+		"id": 808,
+		"name": "Tablet",
+		"version": 1,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 1",
+		"classID": 2
+	},
+	{
+		"id": 366,
+		"name": "Projector",
+		"version": 1,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 1",
+		"classID": 50
+	},
+	{
+		"id": 222,
+		"name": "Laptop computer",
+		"version": 1,
+		"count": 11,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 7
+	},
+	{
+		"id": 766,
+		"name": "Laptop computer",
+		"version": 3,
+		"count": 8,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 40
+	},
+	{
+		"id": 955,
+		"name": "Document camera",
+		"version": 1,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 1",
+		"classID": 6
+	},
+	{
+		"id": 685,
+		"name": "Projector",
+		"version": 1,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 32
+	},
+	{
+		"id": 28,
+		"name": "Tablet",
+		"version": 1,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 33
+	},
+	{
+		"id": 123,
+		"name": "Speakers",
+		"version": 3,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 2
+	},
+	{
+		"id": 683,
+		"name": "Tablet",
+		"version": 2,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 35
+	},
+	{
+		"id": 698,
+		"name": "Laptop computer",
+		"version": 1,
+		"count": 22,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 50
+	},
+	{
+		"id": 958,
+		"name": "Document camera",
+		"version": 2,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 2",
+		"classID": 42
+	},
+	{
+		"id": 315,
+		"name": "Projector",
+		"version": 3,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 2",
+		"classID": 45
+	},
+	{
+		"id": 32,
+		"name": "Speakers",
+		"version": 3,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 2",
+		"classID": 42
+	},
+	{
+		"id": 288,
+		"name": "Projector",
+		"version": 2,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 42
+	},
+	{
+		"id": 584,
+		"name": "Laptop computer",
+		"version": 1,
+		"count": 23,
+		"status": "has broken device",
+		"note": "Location of broken device: 2",
+		"classID": 38
+	},
+	{
+		"id": 677,
+		"name": "Laptop computer",
+		"version": 2,
+		"count": 7,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 33
+	},
+	{
+		"id": 879,
+		"name": "Interactive whiteboard",
+		"version": 2,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 50
+	},
+	{
+		"id": 75,
+		"name": "Speakers",
+		"version": 1,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 12
+	},
+	{
+		"id": 997,
+		"name": "Document camera",
+		"version": 2,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 4
+	},
+	{
+		"id": 455,
+		"name": "Laptop computer",
+		"version": 3,
+		"count": 10,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 46
+	},
+	{
+		"id": 379,
+		"name": "Document camera",
+		"version": 3,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 10
+	},
+	{
+		"id": 227,
+		"name": "Laptop computer",
+		"version": 3,
+		"count": 5,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 14
+	},
+	{
+		"id": 541,
+		"name": "Tablet",
+		"version": 2,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 27
+	},
+	{
+		"id": 679,
+		"name": "Tablet",
+		"version": 2,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 23
+	},
+	{
+		"id": 515,
+		"name": "Projector",
+		"version": 3,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 31
+	},
+	{
+		"id": 213,
+		"name": "Projector",
+		"version": 1,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 16
+	},
+	{
+		"id": 525,
+		"name": "Laptop computer",
+		"version": 1,
+		"count": 5,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 6
+	},
+	{
+		"id": 60,
+		"name": "Laptop computer",
+		"version": 2,
+		"count": 28,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 42
+	},
+	{
+		"id": 806,
+		"name": "Laptop computer",
+		"version": 1,
+		"count": 9,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 9
+	},
+	{
+		"id": 624,
+		"name": "Projector",
+		"version": 2,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 43
+	},
+	{
+		"id": 250,
+		"name": "Tablet",
+		"version": 3,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 11",
+		"classID": 25
+	},
+	{
+		"id": 116,
+		"name": "Tablet",
+		"version": 3,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 18",
+		"classID": 10
+	},
+	{
+		"id": 527,
+		"name": "Laptop computer",
+		"version": 3,
+		"count": 5,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 2
+	},
+	{
+		"id": 496,
+		"name": "Interactive whiteboard",
+		"version": 2,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 1",
+		"classID": 17
+	},
+	{
+		"id": 877,
+		"name": "Projector",
+		"version": 1,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 44
+	},
+	{
+		"id": 724,
+		"name": "Interactive whiteboard",
+		"version": 2,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 1",
+		"classID": 7
+	},
+	{
+		"id": 820,
+		"name": "Laptop computer",
+		"version": 1,
+		"count": 20,
+		"status": "has broken device",
+		"note": "Location of broken device: 2",
+		"classID": 31
+	},
+	{
+		"id": 987,
+		"name": "Projector",
+		"version": 1,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 9",
+		"classID": 18
+	},
+	{
+		"id": 816,
+		"name": "Document camera",
+		"version": 3,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 9
+	},
+	{
+		"id": 970,
+		"name": "Interactive whiteboard",
+		"version": 1,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 43
+	},
+	{
+		"id": 174,
+		"name": "Document camera",
+		"version": 1,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 30
+	},
+	{
+		"id": 143,
+		"name": "Document camera",
+		"version": 2,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 23
+	},
+	{
+		"id": 704,
+		"name": "Document camera",
+		"version": 2,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 17
+	},
+	{
+		"id": 16,
+		"name": "Tablet",
+		"version": 2,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 1
+	},
+	{
+		"id": 546,
+		"name": "Speakers",
+		"version": 3,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 18",
+		"classID": 20
+	},
+	{
+		"id": 821,
+		"name": "Interactive whiteboard",
+		"version": 2,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 30
+	},
+	{
+		"id": 178,
+		"name": "Document camera",
+		"version": 2,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 8
+	},
+	{
+		"id": 625,
+		"name": "Projector",
+		"version": 1,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 5
+	},
+	{
+		"id": 971,
+		"name": "Tablet",
+		"version": 3,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 3",
+		"classID": 40
+	},
+	{
+		"id": 906,
+		"name": "Speakers",
+		"version": 2,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 8",
+		"classID": 21
+	},
+	{
+		"id": 414,
+		"name": "Projector",
+		"version": 1,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 35
+	},
+	{
+		"id": 612,
+		"name": "Interactive whiteboard",
+		"version": 3,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 12
+	},
+	{
+		"id": 459,
+		"name": "Projector",
+		"version": 1,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 1",
+		"classID": 19
+	},
+	{
+		"id": 755,
+		"name": "Interactive whiteboard",
+		"version": 2,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 2",
+		"classID": 47
+	},
+	{
+		"id": 979,
+		"name": "Speakers",
+		"version": 3,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 27
+	},
+	{
+		"id": 827,
+		"name": "Tablet",
+		"version": 1,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 11
+	},
+	{
+		"id": 812,
+		"name": "Laptop computer",
+		"version": 2,
+		"count": 30,
+		"status": "has broken device",
+		"note": "Location of broken device: 10",
+		"classID": 13
+	},
+	{
+		"id": 972,
+		"name": "Speakers",
+		"version": 2,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 5
+	},
+	{
+		"id": 655,
+		"name": "Laptop computer",
+		"version": 1,
+		"count": 15,
+		"status": "has broken device",
+		"note": "Location of broken device: 6",
+		"classID": 10
+	},
+	{
+		"id": 107,
+		"name": "Speakers",
+		"version": 3,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 24
+	},
+	{
+		"id": 10,
+		"name": "Projector",
+		"version": 2,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 1
+	},
+	{
+		"id": 933,
+		"name": "Interactive whiteboard",
+		"version": 3,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 7",
+		"classID": 39
+	},
+	{
+		"id": 585,
+		"name": "Laptop computer",
+		"version": 2,
+		"count": 4,
+		"status": "has broken device",
+		"note": "Location of broken device: 1",
+		"classID": 21
+	},
+	{
+		"id": 225,
+		"name": "Tablet",
+		"version": 2,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 17",
+		"classID": 26
+	},
+	{
+		"id": 591,
+		"name": "Speakers",
+		"version": 3,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 18
+	},
+	{
+		"id": 279,
+		"name": "Speakers",
+		"version": 3,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 30",
+		"classID": 11
+	},
+	{
+		"id": 275,
+		"name": "Laptop computer",
+		"version": 2,
+		"count": 6,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 8
+	},
+	{
+		"id": 313,
+		"name": "Laptop computer",
+		"version": 3,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 15
+	},
+	{
+		"id": 528,
+		"name": "Document camera",
+		"version": 3,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 14",
+		"classID": 34
+	},
+	{
+		"id": 931,
+		"name": "Speakers",
+		"version": 2,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 20",
+		"classID": 28
+	},
+	{
+		"id": 446,
+		"name": "Interactive whiteboard",
+		"version": 2,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 34
+	},
+	{
+		"id": 475,
+		"name": "Tablet",
+		"version": 2,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 2",
+		"classID": 8
+	},
+	{
+		"id": 160,
+		"name": "Interactive whiteboard",
+		"version": 2,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 33
+	},
+	{
+		"id": 189,
+		"name": "Laptop computer",
+		"version": 1,
+		"count": 18,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 11
+	},
+	{
+		"id": 725,
+		"name": "Laptop computer",
+		"version": 3,
+		"count": 7,
+		"status": "has broken device",
+		"note": "Location of broken device: 25",
+		"classID": 43
+	},
+	{
+		"id": 800,
+		"name": "Document camera",
+		"version": 1,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 16",
+		"classID": 13
+	},
+	{
+		"id": 551,
+		"name": "Projector",
+		"version": 2,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 2",
+		"classID": 12
+	},
+	{
+		"id": 927,
+		"name": "Laptop computer",
+		"version": 2,
+		"count": 29,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 4
+	},
+	{
+		"id": 554,
+		"name": "Laptop computer",
+		"version": 2,
+		"count": 27,
+		"status": "has broken device",
+		"note": "Location of broken device: 3",
+		"classID": 18
+	},
+	{
+		"id": 453,
+		"name": "Speakers",
+		"version": 3,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 47
+	},
+	{
+		"id": 359,
+		"name": "Speakers",
+		"version": 3,
+		"count": 1,
+		"status": "has broken device",
+		"note": "Location of broken device: 29",
+		"classID": 35
+	},
+	{
+		"id": 332,
+		"name": "Document camera",
+		"version": 1,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 16
+	},
+	{
+		"id": 135,
+		"name": "Projector",
+		"version": 3,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 22
+	},
+	{
+		"id": 91,
+		"name": "Speakers",
+		"version": 3,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 16
+	},
+	{
+		"id": 910,
+		"name": "Tablet",
+		"version": 1,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 6
+	},
+	{
+		"id": 809,
+		"name": "Interactive whiteboard",
+		"version": 1,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 31
+	},
+	{
+		"id": 400,
+		"name": "Speakers",
+		"version": 1,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 50
+	},
+	{
+		"id": 409,
+		"name": "Speakers",
+		"version": 1,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 10
+	},
+	{
+		"id": 154,
+		"name": "Tablet",
+		"version": 2,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 32
+	},
+	{
+		"id": 694,
+		"name": "Document camera",
+		"version": 3,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 1
+	},
+	{
+		"id": 33,
+		"name": "Tablet",
+		"version": 3,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 4
+	},
+	{
+		"id": 229,
+		"name": "Interactive whiteboard",
+		"version": 1,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 38
+	},
+	{
+		"id": 1000,
+		"name": "Tablet",
+		"version": 1,
+		"count": 1,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 24
+	},
+	{
+		"id": 289,
+		"name": "Projector",
+		"version": 2,
+		"count": 2,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 7
+	},
+	{
+		"id": 368,
+		"name": "Interactive whiteboard",
+		"version": 2,
+		"count": 1,
+		"status": "normal",
+		"note": "This device is working well!",
+		"classID": 18
+	},
+	{
+		"id": 206,
+		"name": "Interactive whiteboard",
+		"version": 1,
+		"count": 2,
+		"status": "has broken device",
+		"note": "Location of broken device: 11",
+		"classID": 20
+	},
+	{
+		"id": 498,
+		"name": "Tablet",
+		"version": 3,
+		"count": 2,
+		"status": "broken",
+		"note": "Needs to be replaced immediately!",
+		"classID": 31
+	}
+]

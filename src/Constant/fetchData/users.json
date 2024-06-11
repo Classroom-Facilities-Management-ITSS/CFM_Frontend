@@ -1,0 +1,58 @@
+[
+	{
+		"id": "b0a6c630-b653-4521-12c4-08dc8215c167",
+		"user": {
+			"firstName": null,
+			"lastName": null,
+			"fullName": "",
+			"dob": "0001-01-01T00:00:00",
+			"department": null,
+			"avatar": null
+		},
+		"role": "USER",
+		"email": "ama098540@gmail.com",
+		"active": true
+	},
+	{
+		"id": "22419bd6-c6d1-499b-8f1e-08dc8231f7d5",
+		"user": {
+			"firstName": null,
+			"lastName": null,
+			"fullName": "",
+			"dob": "0001-01-01T00:00:00",
+			"department": null,
+			"avatar": null
+		},
+		"role": "ADMIN",
+		"email": "admin@gmail.com",
+		"active": true
+	},
+	{
+		"id": "f77c5029-dcc0-4c88-728f-08dc8513e2ad",
+		"user": {
+			"firstName": null,
+			"lastName": null,
+			"fullName": "",
+			"dob": "0001-01-01T00:00:00",
+			"department": null,
+			"avatar": null
+		},
+		"role": "USER",
+		"email": "su639282@gmail.com",
+		"active": true
+	},
+	{
+		"id": "585ef4ec-d32f-463a-9246-08dc892ec974",
+		"user": {
+			"firstName": null,
+			"lastName": null,
+			"fullName": "",
+			"dob": "0001-01-01T00:00:00",
+			"department": null,
+			"avatar": null
+		},
+		"role": "USER",
+		"email": "user@example.com",
+		"active": false
+	}
+]

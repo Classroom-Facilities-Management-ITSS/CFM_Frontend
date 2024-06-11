@@ -1,0 +1,72 @@
+[
+	{
+		"id": 0,
+		"classID": 13,
+		"userID": 10,
+		"note": "Class E101 has broken device(s).",
+		"finish": 0
+	},
+	{
+		"id": 3,
+		"classID": 39,
+		"userID": 7,
+		"note": "Class E102 has broken device(s).",
+		"finish": 0
+	},
+	{
+		"id": 4,
+		"classID": 16,
+		"userID": 8,
+		"note": "Class E105 has broken device(s).",
+		"finish": 0
+	},
+	{
+		"id": 6,
+		"classID": 12,
+		"userID": 6,
+		"note": "Class C103 has broken device(s).",
+		"finish": 0
+	},
+	{
+		"id": 9,
+		"classID": 15,
+		"userID": 6,
+		"note": "Class C201 has broken device(s).",
+		"finish": 0
+	},
+	{
+		"id": 8,
+		"classID": 8,
+		"userID": 6,
+		"note": "Class A202 has broken device(s).",
+		"finish": 0
+	},
+	{
+		"id": 1,
+		"classID": 35,
+		"userID": 8,
+		"note": "Class B203 has broken device(s).",
+		"finish": 0
+	},
+	{
+		"id": 7,
+		"classID": 7,
+		"userID": 9,
+		"note": "Class B101 has broken device(s).",
+		"finish": 0
+	},
+	{
+		"id": 2,
+		"classID": 24,
+		"userID": 9,
+		"note": "Class E201 has broken device(s).",
+		"finish": 0
+	},
+	{
+		"id": 5,
+		"classID": 5,
+		"userID": 8,
+		"note": "Class D103 has broken device(s).",
+		"finish": 0
+	}
+]

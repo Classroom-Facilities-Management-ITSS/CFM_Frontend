@@ -1,0 +1,30 @@
+.p-5 {
+    padding: 1.25rem /* 20px */;
+}
+.p-10 {
+    padding: 2.5rem /* 40px */;
+}
+.block {
+    display: block;
+}
+.inline {
+    display: inline;
+}
+.inline-block {
+    display: inline-block;
+}
+
+#dash-header {
+    flex-direction: column;
+}
+#dash-card {
+    padding: 20px;
+    margin-top: 25px;
+}
+#card-icon {
+    font-size: 25px;
+}
+
+#chart-container {
+    margin-top: 25; 
+}
