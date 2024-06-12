@@ -91,7 +91,6 @@ const NavBar = (props) => {
         } else {
           nav(`/account/${props.user.accountID}`);
         }
-        
       },
     },
     {
@@ -428,7 +427,7 @@ const App = () => {
                     path="/account/:accountID"
                     element={<UserDetail></UserDetail>}
                   ></Route>
-                  {/*
+
                   <Route
                     path="/classList"
                     element={<ClassList></ClassList>}
@@ -450,7 +449,6 @@ const App = () => {
                     path="/reportList"
                     element={<ReportList></ReportList>}
                   ></Route>
-                  */}
                 </Routes>
               ) : (
                 <Modal
