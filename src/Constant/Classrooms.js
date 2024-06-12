@@ -1,5 +1,12 @@
-const fs = require("fs");
-const axios = require("axios");
+import axios, * as others from "axios";
+
+const Http = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  headers: {
+    accept: "application/json",
+    "ngrok-skip-browser-warning": "69420",
+  },
+});
 
 async function testGetClass() {
   let id = "";
@@ -9,75 +16,50 @@ async function testGetClass() {
   console.log(data);
 }
 
-async function testGetClassList() {
-  let data = await getClassList();
-  data = JSON.stringify(data, null, "\t");
-  fs.writeFile(
-    "C:/Users/admin/OneDrive/Documents/VisualStudio2019/Js/ES6/React/ClassManager/class-manager/src/Constant/fetchData/classes.json",
-    data,
-    "utf-8",
-    function (err) {
-      if (err) {
-        throw err;
-      }
-      console.log("Saved!");
-    }
-  );
-}
-
-async function testAddAcc() {
-  let newAcc = {
-    email: "ijp53w6q.7zrrb7rwcs@example.com",
-    password: "defghj123456",
+async function testAddClass() {
+  let newClass = {
+    address: "New Address",
+    note: "This is a new class.",
+    status: "normal",
+    lastUsed: "2024-06-19",
+    facilityAmount: 30,
   };
-  addNewAcc(newAcc);
+  addNewClass(newClass);
 }
 
-async function testRenewAcc() {
+async function testRenewClass() {
   let renewData = {
-    id: "",
-    email: "",
-    password: "",
+    id: "class_id",
+    address: "Updated Address",
+    note: "This is an updated class.",
+    status: "normal",
+    lastUsed: "2024-06-20",
+    facilityAmount: 35,
   };
-  renewAcc(renewData);
+  renewClass(renewData);
+}
+
+async function testRemoveClass() {
+  let id = "class_id";
+  removeClass(id);
 }
 
 async function getClass(id) {
-  var response = await fetch(
-    `https://7b93-27-72-100-200.ngrok-free.app/api/v1/classroom/${id}`
-  );
-  var data = await response.json();
-
-  return data.data;
+  let response = await Http.get(`/api/v1/classroom/${id}`);
+  return response.data.data;
 }
 
 async function getClassList() {
-  var response = await fetch(
-    `https://7b93-27-72-100-200.ngrok-free.app/api/v1/classroom`
-  );
-  var data = await response.json();
-
-  let Classess = [];
-  data.data.map((elem) => {
-    let classroom = {
-      id: elem.id,
-      note: elem.note,
-      status: elem.status,
-      address: elem.address,
-      lastUsed: elem.lastUsed,
-      facilityAmount: elem.facilityAmount,
-    };
-
-    Classess = [...Classess, classroom];
-  });
-
-  return Classess;
+  let response = await Http.get(`/api/v1/classroom`);
+  return response.data.data;
 }
 
 async function addNewClass(newClass) {
-  axios
+  let res;
+
+  await axios
     .post(
-      `https://7b93-27-72-100-200.ngrok-free.app/api/v1/classroom`,
+      `${process.env.REACT_APP_API_URL}/api/v1/classroom`,
       JSON.stringify(newClass),
       {
         headers: {
@@ -88,14 +70,22 @@ async function addNewClass(newClass) {
     .then((response) => {
       console.log(`Response: ${response}`);
       console.log(`Status code: ${response.status}`);
+      res = response;
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      res = err;
+    });
+
+  return res;
 }
 
 async function renewClass(data) {
+  let res;
+
   axios
     .put(
-      `https://7b93-27-72-100-200.ngrok-free.app/api/v1/account/${data.id}`,
+      `${process.env.REACT_APP_API_URL}/api/v1/classroom/${data.id}`,
       JSON.stringify(data),
       {
         headers: {
@@ -106,15 +96,19 @@ async function renewClass(data) {
     .then((response) => {
       console.log(`Response: ${response}`);
       console.log(`Status code: ${response.status}`);
+      res = response;
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      res = err;
+    });
+
+  return res;
 }
 
 async function removeClass(id) {
   axios
-    .delete(
-      `https://7b93-27-72-100-200.ngrok-free.app/api/v1/account/${data.id}`
-    )
+    .delete(`${process.env.REACT_APP_API_URL}/api/v1/classroom/${id}`)
     .then((response) => {
       console.log(`Response: ${response}`);
       console.log(`Status code: ${response.status}`);
@@ -122,8 +116,22 @@ async function removeClass(id) {
     .catch((err) => console.log(err));
 }
 
-//testGetAcc()
-//testGetAccList();
-//testAddAcc();
+async function getSuggestion(id) {
+  let response = await Http.get(`/api/v1/suggest?Id=${id}`);
+  return response.data.data;
+}
 
-module.exports = { getAccList };
+// testGetClass();
+// testGetClassList();
+// testAddClass();
+// testRenewClass();
+// testRemoveClass();
+
+export {
+  getClass,
+  getClassList,
+  addNewClass,
+  renewClass,
+  removeClass,
+  getSuggestion,
+};

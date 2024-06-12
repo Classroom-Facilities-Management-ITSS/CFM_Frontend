@@ -65,12 +65,42 @@ async function testRemoveAcc() {
 
 async function getAcc(id) {
   var response = await Http.get(`/api/v1/account/${id}`);
-  return response.data.data;
+  response = response.data.data;
+
+  let profile = {
+    accountID: response.id,
+    avatar: response.user.avatar,
+    fullName: response.user.fullName ? response.user.fullName : "No name",
+    lastName: response.user.lastName ? response.user.lastName : "No name",
+    firstName: response.user.firstName ? response.user.firstName : "No name",
+    account: {
+      id: response.id,
+      role: response.role,
+      email: response.email,
+      active: response.active,
+    },
+  };
+  return profile;
 }
 
 async function getAccByEmail(email) {
   var response = await Http.get(`/api/v1/account/search?Email=${email}`);
-  return response.data.data;
+  response = response.data.data;
+
+  let profile = {
+    accountID: response.id,
+    avatar: response.user.avatar,
+    fullName: response.user.fullName ? response.user.fullName : "No name",
+    lastName: response.user.lastName ? response.user.lastName : "No name",
+    firstName: response.user.firstName ? response.user.firstName : "No name",
+    account: {
+      id: response.id,
+      role: response.role,
+      email: response.email,
+      active: response.active,
+    },
+  };
+  return profile;
 }
 
 async function getAccList() {
@@ -83,7 +113,7 @@ async function getAccList() {
       accountID: elem.id,
       avatar: elem.user.avatar,
       fullName: elem.user.fullName ? elem.user.fullName : "No name",
-      lastName: elem.user.lastName ? elem.user.lastName : "No name",        
+      lastName: elem.user.lastName ? elem.user.lastName : "No name",
       firstName: elem.user.firstName ? elem.user.firstName : "No name",
       account: {
         id: elem.id,
@@ -95,12 +125,13 @@ async function getAccList() {
 
     Accs = [...Accs, acc];
   });
-
   return Accs;
 }
 
 async function addNewAcc(newAcc) {
-  axios
+  let res;
+
+  await axios
     .post(
       `${process.env.REACT_APP_API_URL}/api/v1/account`,
       JSON.stringify(newAcc),
@@ -113,8 +144,14 @@ async function addNewAcc(newAcc) {
     .then((response) => {
       console.log(`Response: ${response}`);
       console.log(`Status code: ${response.status}`);
+      res = response;
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      res = err;
+    });
+
+  return res;
 }
 
 async function renewAcc(data) {
@@ -155,7 +192,7 @@ async function getProfile(token) {
     accountID: response.id,
     avatar: response.user.avatar,
     fullName: response.user.fullName ? response.user.fullName : "No name",
-    lastName: response.user.lastName ? response.user.lastName : "No name",        
+    lastName: response.user.lastName ? response.user.lastName : "No name",
     firstName: response.user.firstName ? response.user.firstName : "No name",
     account: {
       id: response.id,
@@ -177,10 +214,8 @@ export {
   getAcc,
   getAccList,
   getAccByEmail,
-
   addNewAcc,
   renewAcc,
   removeAcc,
-
   getProfile,
 };

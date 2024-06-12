@@ -43,11 +43,11 @@ async function testGetScheduleList() {
 
 async function testAddSchedule() {
   let newSchedule = {
-    accountId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",    
+    accountId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     classroomId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     startTime: "2024-06-12T06:36:20.155Z",
     endTime: "2024-06-12T06:36:20.155Z",
-    subject: "string",    
+    subject: "string",
     countStudent: 0,
   };
   addNewSchedule(newSchedule);
@@ -56,14 +56,12 @@ async function testAddSchedule() {
 async function testRenewSchedule() {
   let renewData = {
     id: "b0a6c630-b653-4521-12c4-08dc8215c167",
-    email: "ama098540@gmail.com",
-    password: "123456789",
   };
-  renewAcc(renewData);
+  renewSchedule(renewData);
 }
 
 async function testRemoveSchedule() {
-  let id = "455d91a5-9528-42c4-9249-08dc892ec974";
+  let id = "b0a6c630-b653-4521-12c4-08dc8215c167";
   removeSchedule(id);
 }
 
@@ -157,20 +155,18 @@ async function getUserSchedule(token) {
   return response;
 }
 
-//testGetAcc();
-//testGetAccList();
-//testGetAccByEmail();
-//testAddAcc();
-//testRenewAcc();
+//testGetSchedule();
+//testGetScheduleList();
+//testGetScheduleByEmail();
+//testAddSchedule();
+//testRenewSchedule();
 
 export {
   getSchedule,
   getScheduleList,
   getScheduleByEmail,
-
   addNewSchedule,
   renewSchedule,
   removeSchedule,
-
   getUserSchedule,
 };

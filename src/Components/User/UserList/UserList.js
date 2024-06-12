@@ -11,7 +11,7 @@ import {
   AuditOutlined,
 } from "@ant-design/icons";
 
-import { getAccList } from "../../../Constant/User";
+import { addNewAcc, getAccList } from "../../../Constant/User";
 
 const userAttribute = [
   {
@@ -42,16 +42,6 @@ const userAttribute = [
 ];
 
 const UserList = () => {
-  const [userList, setUserList] = useState(null);
-  
-  useEffect(() => {
-    async function getList() {
-      let list = await getAccList();
-      setUserList(list);
-    }
-    getList();
-  }, []);
-
   const [messageApi, contextHolder] = message.useMessage();
   const success = () => {
     messageApi.open({
@@ -65,6 +55,27 @@ const UserList = () => {
       content: "Confirm Password must be the same as new password!",
     });
   };
+  const apiError = () => {
+    messageApi.open({
+      type: "error",
+      content: "API Error! Try to reconnect your API!",
+    });
+  };
+
+  const [userList, setUserList] = useState(null);
+
+  useEffect(() => {
+    async function getList() {
+      let list = await getAccList();
+      setUserList(list);
+    }
+    try {
+      getList();
+    } catch (error) {
+      apiError();
+      console.log(error);
+    }
+  }, []);
 
   const [isAddUser, setIsAddUser] = useState(false);
   const showAddUserModal = () => {
@@ -82,16 +93,16 @@ const UserList = () => {
     let newAccount = {
       email: values.email,
       password: values.password,
-      role: values.role,
-    };
-    let newUser = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      account: newAccount,
     };
 
-    success();
-    setIsAddUser(false);
+    addNewAcc(newAccount).then((res) => {
+      if (res.status == 200) {
+        success();
+        setIsAddUser(false);
+      } else {
+        apiError();
+      }
+    });
   };
 
   return (

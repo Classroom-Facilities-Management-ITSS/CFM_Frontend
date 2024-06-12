@@ -107,7 +107,7 @@ const NavBar = (props) => {
       icon: React.createElement(NotificationOutlined),
       label: `Storage`,
       onClick: () => {
-        nav("/detail/classroom/0");
+        //nav("/detail/classroom/0");
       },
     },
     {
