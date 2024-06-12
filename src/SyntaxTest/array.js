@@ -1,20 +1,15 @@
-const fs = require("fs");
-const reportData = require("../Constant/initialData/report.json");
+const axios = require("axios");
 
-reportData.map((report) => {
-  report.finish = 0;
-});
+const REACT_APP_API_URL = "https://8467-58-187-77-68.ngrok-free.app/api/v1/";
 
-let inputData = JSON.stringify(reportData, null, "\t");
+let id = "455d91a5-9528-42c4-9249-08dc892ec974";
 
-fs.writeFile(
-  "C:/Users/admin/OneDrive/Documents/VisualStudio2019/Js/ES6/React/ClassManager/class-manager/src/Constant/report1.json",
-  inputData,
-  "utf-8",
-  function (err) {
-    if (err) {
-      throw err;
-    }
-    console.log("Saved!");
-  }
-);
+async function getAcc(id) {
+  var response = await axios.get(`${REACT_APP_API_URL}account/${id}`);
+  var data = response;
+  console.log(data.data.data);
+
+  return data.data;
+}
+
+getAcc(id);

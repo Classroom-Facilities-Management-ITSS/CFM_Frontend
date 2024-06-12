@@ -1,12 +1,17 @@
 import "./UserList.css";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { Space, Table, Button, Modal, Form, Input, message } from "antd";
-import { EditOutlined, UserOutlined, LockOutlined, AuditOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  UserOutlined,
+  LockOutlined,
+  AuditOutlined,
+} from "@ant-design/icons";
 
-import data from "../../../Constant/initialData/user.json";
+import { getAccList } from "../../../Constant/User";
 
 const userAttribute = [
   {
@@ -37,7 +42,15 @@ const userAttribute = [
 ];
 
 const UserList = () => {
-  const classesData = data.filter((classroom) => classroom.id != 0);
+  const [userList, setUserList] = useState(null);
+  
+  useEffect(() => {
+    async function getList() {
+      let list = await getAccList();
+      setUserList(list);
+    }
+    getList();
+  }, []);
 
   const [messageApi, contextHolder] = message.useMessage();
   const success = () => {
@@ -157,7 +170,7 @@ const UserList = () => {
               ]}
             >
               <Input
-                prefix={<AuditOutlined  className="site-form-item-icon" />}
+                prefix={<AuditOutlined className="site-form-item-icon" />}
                 placeholder="First name"
               />
             </Form.Item>
@@ -192,8 +205,8 @@ const UserList = () => {
 
         <Table
           scroll={{ y: 700 }}
+          dataSource={userList}
           columns={userAttribute}
-          dataSource={classesData}
           pagination={{ pageSize: 20 }}
         />
       </div>

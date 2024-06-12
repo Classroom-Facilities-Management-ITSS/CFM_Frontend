@@ -1,6 +1,6 @@
 import "./UserDetail.css";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import {
@@ -17,18 +17,28 @@ import { EditOutlined } from "@ant-design/icons";
 import Capitalize from "../../hook/capitalize";
 
 import { ClassTable } from "../../Class/ClassList/ClassList";
-import usersData from "../../../Constant/initialData/user.json";
 import schedule from "../../../Constant/initialData/schedule.json";
+import { getAcc } from "../../../Constant/User";
 
 const UserDetail = () => {
   const params = useParams();
 
-  const userData = usersData.filter(
-    (user) => user.accountID == params.accountID
-  )[0];
-  const userSchedule = schedule.filter(
-    (elem) => elem.userId == params.accountID
-  );
+  const [userData, setUserData] = useState(null);
+  const [userSchedule, setUserSchedule] = useState(null);
+
+  useEffect(() => {
+    async function getData() {
+      let data = await getAcc(params.accountID);
+      setUserData(data);
+    }
+
+    /*
+    async function getSchedule() {
+      let schedule = await 
+    }
+    */
+  }, [])
+  
 
   const [messageApi, contextHolder] = message.useMessage();
   const info = () => {

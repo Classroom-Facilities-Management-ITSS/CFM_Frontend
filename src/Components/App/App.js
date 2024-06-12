@@ -37,8 +37,9 @@ import {
 } from "@ant-design/icons";
 
 import Dashboard from "../Dashboard/Dashboard.js";
-import ReportSider from "../Report/ReportSider.js";
 import DeviceDetail from "../Device/DeviceDetail.js";
+
+import ReportSider from "../Report/ReportSider.js";
 import ReportList from "../Report/ReportList/ReportList.js";
 
 import UserList from "../User/UserList/UserList.js";
@@ -47,9 +48,10 @@ import UserDetail from "../User/UserDetail/UserDetail.js";
 import { ClassList } from "../Class/ClassList/ClassList.js";
 import ClassDetail from "../Class/ClassDetail/ClassDetail.js";
 
-import usersData from "../../Constant/initialData/user.json";
 import useWindowDimensions from "../hook/useWindowDimensions.js";
+
 import { AuthLogin } from "../../Constant/Http.js";
+import { getProfile } from "../../Constant/User.js";
 
 const { Header, Content, Sider } = Layout;
 
@@ -64,7 +66,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-const NavBar = () => {
+const NavBar = (props) => {
   const nav = useNavigate();
   const {
     token: { colorBgContainer },
@@ -84,7 +86,12 @@ const NavBar = () => {
       icon: React.createElement(UserOutlined),
       label: `Account`,
       onClick: () => {
-        nav("/accountList");
+        if (props.user.account.role == "ADMIN") {
+          nav("/accountList");
+        } else {
+          nav(`/account/${props.user.accountID}`);
+        }
+        
       },
     },
     {
@@ -109,8 +116,8 @@ const NavBar = () => {
       label: `Report`,
       onClick: () => {
         nav("/reportList");
-      }
-    }
+      },
+    },
   ];
 
   return (
@@ -162,11 +169,33 @@ const App = () => {
     });
   };
 
+  const [logAccount, setLogAccount] = useState({});
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-  const [isModalOpen, setIsModalOpen] = useState(true);
-  const [log, setLog] = useState(true);
-  const [logAccount, setLogAccount] = useState({})
 
+  useEffect(() => {
+    let token;
+
+    if (logAccount.email) {
+      AuthLogin({ ...logAccount }, {})
+        .then(async (data) => {
+          success();
+          setIsModalOpen(false);
+
+          token = data.data.data;
+          localStorage.setItem("token", JSON.stringify(data.data.data));
+
+          getProfile(token).then((data) => {
+            setUser(data);
+            localStorage.setItem("user", JSON.stringify(data));
+          });
+        })
+        .catch((err) => {
+          error();
+        });
+    }
+  }, [logAccount]);
+
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -175,20 +204,6 @@ const App = () => {
     setIsModalOpen(false);
   };
 
-  useEffect(() => {
-    if (logAccount.email) {
-      AuthLogin({ ...logAccount }, {})
-        .then((data) => {
-          success();
-          setIsModalOpen(false);
-          localStorage.setItem('token' , JSON.stringify(data.data.data));
-        })
-        .catch((err) => {
-          error();
-        });
-    }
-  }, [log])
-
   const onFinish = (values) => {
     let logUser = {
       email: values.email,
@@ -196,23 +211,6 @@ const App = () => {
     };
 
     setLogAccount(logUser);
-    setLog(x => !x);
-
-    let hasUser = usersData.filter(
-      (user) => user.account.email == logUser.email
-    );
-    if (hasUser.length == 0) {
-      error();
-      return 0;
-    }
-
-    success();
-    setUser(hasUser[0]);
-    if (values.remember) {
-      localStorage.setItem("user", JSON.stringify(hasUser[0], null, "\t"));
-    }
-
-    setIsModalOpen(false);
   };
 
   const [isChangePassword, setIsChangePassword] = useState(false);
@@ -241,6 +239,7 @@ const App = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   const dropdownItems = [
@@ -394,7 +393,7 @@ const App = () => {
 
       <>
         <Layout>
-          <NavBar></NavBar>
+          <NavBar user={user}></NavBar>
 
           <Layout
             style={{
@@ -421,7 +420,7 @@ const App = () => {
               {user ? (
                 <Routes>
                   <Route
-                    path="/accountList"
+                    path={"/accountList"}
                     element={<UserList></UserList>}
                   ></Route>
 
@@ -429,7 +428,7 @@ const App = () => {
                     path="/account/:accountID"
                     element={<UserDetail></UserDetail>}
                   ></Route>
-
+                  {/*
                   <Route
                     path="/classList"
                     element={<ClassList></ClassList>}
@@ -447,7 +446,11 @@ const App = () => {
 
                   <Route path="*" element={<Dashboard></Dashboard>}></Route>
 
-                  <Route path="/reportList" element={<ReportList></ReportList>}></Route>
+                  <Route
+                    path="/reportList"
+                    element={<ReportList></ReportList>}
+                  ></Route>
+                  */}
                 </Routes>
               ) : (
                 <Modal
