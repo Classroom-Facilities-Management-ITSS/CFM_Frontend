@@ -14,6 +14,16 @@ const Http = axios.create({
   },
 });
 
+async function getReport(id) {
+  let response = await Http.get(`/api/v1/report/${id}`);
+  return response.data.data;
+}
+
+async function getReportList() {
+  let response = await Http.get(`/api/v1/report`);
+  return response.data.data;
+}
+
 async function addNewReport(newReport) {
   let res;
 
@@ -37,7 +47,7 @@ async function addNewReport(newReport) {
       res = err;
     });
 
-    return res;
+  return res;
 }
 
-export { addNewReport };
+export { getReport, getReportList, addNewReport };
