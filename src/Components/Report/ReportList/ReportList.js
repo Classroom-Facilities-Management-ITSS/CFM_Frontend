@@ -42,10 +42,11 @@ const ReportList = () => {
   const [reportList, setReportList] = useState(null);
 
   useEffect(() => {
-    async () => {
+    async function getData() {
       let list = await getReportList();
       setReportList(list);
     }
+    getData();
   }, [])
   
 

@@ -110,7 +110,7 @@ const ClassList = () => {
     });
   };
 
-  const [user, setUser] = useState(localStorage.getItem("user"));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [schedule, setSchedule] = useState(null);
 
   useEffect(() => {

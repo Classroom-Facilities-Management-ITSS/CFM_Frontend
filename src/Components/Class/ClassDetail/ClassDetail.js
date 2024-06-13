@@ -207,6 +207,7 @@ const ClassDetail = () => {
       let facilities = await getFacilityByClassAddress(room.address);
       setClassDevices(facilities);
 
+      /*
       let subRooms = await getSuggestion(id);
       setChangeInfo(subRooms);
 
@@ -219,6 +220,7 @@ const ClassDetail = () => {
         options.push(roomName);
       });
       setChangeOption(options);
+      */
     }
     getClassData(params.classID);
   }, []);
@@ -251,7 +253,7 @@ const ClassDetail = () => {
     },
   ];
 
-  const [user, setUser] = useState(localStorage.getItem("user"));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
   const [editMode, setEditMode] = useState(false);
   function handleEdit() {

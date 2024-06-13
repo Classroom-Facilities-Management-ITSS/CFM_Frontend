@@ -208,6 +208,7 @@ const App = () => {
       email: values.email,
       password: values.password,
     };
+    console.log(logUser);
 
     setLogAccount(logUser);
   };

@@ -16,8 +16,10 @@ import { getScheduleByEmail } from "../../../Constant/Schedule";
 const UserDetail = () => {
   const params = useParams();
 
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("user")));
   const [userSchedule, setUserSchedule] = useState(null);
+
+  console.log(userData.fullName);
 
   useEffect(() => {
     async function getData() {

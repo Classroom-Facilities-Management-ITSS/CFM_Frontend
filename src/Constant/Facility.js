@@ -48,7 +48,7 @@ async function testAddFacility() {
 
 async function testRenewFacility() {
   let renewData = {};
-  renewAcc(renewData);
+  //renewAcc(renewData);
 }
 
 async function testRemoveFacility() {
