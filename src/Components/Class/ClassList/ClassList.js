@@ -114,8 +114,6 @@ const ClassList = () => {
   const [schedule, setSchedule] = useState(null);
 
   useEffect(() => {
-    
-
     async function getSchedule() {
       let schedule = await getScheduleByEmail(user.account.email);
       setSchedule(schedule);
@@ -141,7 +139,7 @@ const ClassList = () => {
     let newClass = {
       address: values.address,
       status: values.status,
-      note: values.note,
+      note: "",
       lastUsed: now,
       maxSize: 0,
     };

@@ -48,8 +48,6 @@ const ReportList = () => {
     }
     getData();
   }, [])
-  
-
 
   const reportAttribute = [
     {

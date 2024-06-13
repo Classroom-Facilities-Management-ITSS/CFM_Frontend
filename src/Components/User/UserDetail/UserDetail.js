@@ -19,8 +19,6 @@ const UserDetail = () => {
   const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("user")));
   const [userSchedule, setUserSchedule] = useState(null);
 
-  console.log(userData.fullName);
-
   useEffect(() => {
     async function getData() {
       let data = await getAcc(params.accountID);
