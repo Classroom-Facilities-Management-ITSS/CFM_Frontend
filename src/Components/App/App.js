@@ -232,7 +232,6 @@ const App = () => {
       newPassword: values.newPassword,
       confirmPassword: values.confirmPassword,
     };
-    console.log(newLoginInfo);
 
     setIsChangePassword(false);
   };

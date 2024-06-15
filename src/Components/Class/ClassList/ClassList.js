@@ -1,7 +1,6 @@
 import "./ClassList.css";
 
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -16,8 +15,8 @@ import {
 } from "antd";
 import { EditOutlined, BankOutlined } from "@ant-design/icons";
 
-import { addNewClass, getClassList } from "../../../Constant/Classrooms";
 import { getScheduleByEmail } from "../../../Constant/Schedule";
+import { addNewClass, getClassList } from "../../../Constant/Classrooms";
 
 const ClassTable = (props) => {
   const [classesData, setClassesData] = useState(null);
@@ -139,9 +138,9 @@ const ClassList = () => {
     let newClass = {
       address: values.address,
       status: values.status,
-      note: "",
       lastUsed: now,
       maxSize: 0,
+      note: "",
     };
     
     setIsAddClass(false);

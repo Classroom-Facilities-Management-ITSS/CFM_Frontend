@@ -1,6 +1,6 @@
 import axios, * as others from "axios";
 
-var token = JSON.parse(localStorage.getItem("token"));
+let token = JSON.parse(localStorage.getItem("token"));
 if (token) {
   axios.defaults.headers.common["Authorization"] =
     `bearer ` + token.accessToken;
@@ -13,11 +13,6 @@ const Http = axios.create({
     "ngrok-skip-browser-warning": "69420",
   },
 });
-
-const headers = {
-  accept: "application/json",
-  "ngrok-skip-browser-warning": "69420",
-};
 
 async function testGetFacility() {
   let id = "";
@@ -48,7 +43,7 @@ async function testAddFacility() {
 
 async function testRenewFacility() {
   let renewData = {};
-  //renewAcc(renewData);
+  renewFacility(renewData);
 }
 
 async function testRemoveFacility() {
@@ -57,19 +52,40 @@ async function testRemoveFacility() {
 }
 
 async function getFacility(id) {
-  var response = await Http.get(`/api/v1/facility/${id}`);
+  let response = await Http.get(`/api/v1/facility/${id}`);
   return response.data.data;
 }
 
 async function getFacilityByClassAddress(classAddress) {
-  var response = await Http.get(
-    `/api/v1/facility/search?ClassroomAddress=${classAddress}`
-  );
-  return response.data.data;
+  let page = 1;
+  let limit = 10;
+  let listData = [];
+  let hasMore = true;
+
+  while (hasMore) {
+    let response = await Http.get(
+      `/api/v1/facility/search?ClassroomAddress=${classAddress}`,
+      {
+        params: { page, limit },
+      }
+    );
+    let data = response.data.data;
+
+    if (data.length == limit) {
+      page += 1;
+      listData.push(...data);
+    } else {
+      hasMore = false;
+      listData.push(...data);
+    }
+  }
+
+  console.log(listData);
+  return listData;
 }
 
 async function getFacilityList() {
-  var response = await Http.get(`/api/v1/facility`);
+  let response = await Http.get(`/api/v1/facility`);
   return response.data.data;
 }
 

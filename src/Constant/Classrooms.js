@@ -50,23 +50,38 @@ async function getClass(id) {
 }
 
 async function getClassList() {
-  let response = await Http.get(`/api/v1/classroom`);
-  return response.data.data;
+  let page = 1;
+  let limit = 10;
+  let listData = [];
+  let hasMore = true;
+
+  while (hasMore) {
+    let response = await Http.get(`/api/v1/classroom`, {
+      params: { page, limit },
+    });
+    let data = response.data.data;
+
+    if (data.length == limit) {
+      page += 1;
+      listData.push(...data);
+    } else {
+      hasMore = false;
+      listData.push(...data);
+    }
+  }
+
+  return listData;
 }
 
 async function addNewClass(newClass) {
   let res;
 
   await axios
-    .post(
-      `${process.env.REACT_APP_API_URL}/api/v1/classroom`,
-      JSON.stringify(newClass),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
+    .post(`${process.env.REACT_APP_API_URL}/api/v1/classroom`, newClass, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
     .then((response) => {
       console.log(`Response: ${response}`);
       console.log(`Status code: ${response.status}`);

@@ -1,6 +1,6 @@
 import "./Dashboard.css";
 
-import React from "react";
+import React, { useState } from "react";
 
 import { Flex, Space, Card } from "antd";
 import { AuditOutlined, UserOutlined, ApiOutlined } from "@ant-design/icons";
@@ -11,11 +11,13 @@ import usersData from "../../Constant/initialData/user.json";
 import reportData from "../../Constant/initialData/report.json";
 import devicesData from "../../Constant/initialData/device.json";
 
-const user = JSON.parse(localStorage.getItem("user"));
+//const user = JSON.parse(localStorage.getItem("user"));
 const brokenDevices = devicesData.filter((device) => device.status != "normal");
 
 const Dashboard = () => {
-  if (user.account.role == "user") {
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+
+  if (user.account.role == "USER") {
     reportData = reportData.filter((report) => report.userID == user.accountID);
   }
 
