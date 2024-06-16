@@ -1,7 +1,6 @@
 import "./ClassList.css";
 
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -16,26 +15,36 @@ import {
 } from "antd";
 import { EditOutlined, BankOutlined } from "@ant-design/icons";
 
-import data from "../../../Constant/initialData/classroom.json";
+import { getScheduleByEmail } from "../../../Constant/Schedule";
+import { addNewClass, getClassList } from "../../../Constant/Classrooms";
 
 const ClassTable = (props) => {
-  const classesData = [];
-  if (props.schedule == undefined) {
-    data
-      .filter((classroom) => classroom.id != 0)
-      .map((classroom) => {
-        classesData.push(classroom);
+  const [classesData, setClassesData] = useState(null);
+
+  useEffect(() => {
+    async function getClassess() {
+      let list = await getClassList();
+      setClassesData(list);
+    }
+
+    if (props.schedule == undefined) {
+      getClassess();
+    } else {
+      let classes = [];
+      props.schedule.map((elem) => {
+        let room = {
+          id: elem.classroomId,
+          address: elem.classroom.address,
+          lastUsed: elem.classroom.lastUsed,
+          status: elem.classroom.status,
+          note: elem.classroom.note,
+          facilityAmount: elem.classroom.facilityAmount,
+        };
+        classes = [...classes, room]
       });
-  } else {
-    props.schedule.map((id) => {
-      data
-        .filter((classroom) => classroom.id == id.classroomId)
-        .map((classroom) => {
-          classroom.time = id.time;
-          classesData.push(classroom);
-        });
-    });
-  }
+      setClassesData(classes);
+    }
+  }, []);
 
   const listAttribute = [
     {
@@ -87,24 +96,61 @@ const ClassList = () => {
       content: "Successfully add new class!",
     });
   };
+  const forbidden = () => {
+    messageApi.open({
+      type: "error",
+      content: "Only admin can add classroom!",
+    });
+  };
+  const apiError = () => {
+    messageApi.open({
+      type: "error",
+      content: "Something when wrong please try again later!",
+    });
+  };
+
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [schedule, setSchedule] = useState(null);
+
+  useEffect(() => {
+    async function getSchedule() {
+      let schedule = await getScheduleByEmail(user.account.email);
+      setSchedule(schedule);
+    }
+    getSchedule();
+  }, []);
 
   const [isAddClass, setIsAddClass] = useState(false);
   const showAddClassModal = () => {
-    setIsAddClass(true);
+    if (user.account.role == "ADMIN") {
+      setIsAddClass(true);
+    } else {
+      forbidden();
+    }
   };
   const handleCancel = () => {
     setIsAddClass(false);
   };
   const onFinishAdd = (values) => {
+    let now = new Date();
+    now = now.toISOString();
+
     let newClass = {
       address: values.address,
       status: values.status,
-      note: values.note,
+      lastUsed: now,
+      maxSize: 0,
+      note: "",
     };
-
-    success();
-    console.log(newClass);
+    
     setIsAddClass(false);
+    addNewClass(newClass).then((res) => {
+      if (res.status == 200) {
+        success();
+      } else {
+        apiError();
+      }
+    });
   };
 
   return (
@@ -180,7 +226,7 @@ const ClassList = () => {
             </Form.Item>
           </Form>
         </Modal>
-        <ClassTable></ClassTable>
+        {user.account.role == "ADMIN" ? <ClassTable></ClassTable> : <ClassTable schedule={schedule}></ClassTable>}
       </div>
     </Space>
   );

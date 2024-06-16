@@ -1,74 +1,221 @@
-const fs = require("fs");
-const { json } = require("react-router-dom");
+import axios, * as others from "axios";
 
-async function test() {
-  let data = await getUserList();
-  data = JSON.stringify(data, null, "\t");
-  fs.writeFile(
-    "C:/Users/admin/OneDrive/Documents/VisualStudio2019/Js/ES6/React/ClassManager/class-manager/src/Constant/fetchData/users.json",
-    data,
-    "utf-8",
-    function (err) {
-      if (err) {
-        throw err;
-      }
-      console.log("Saved!");
-    }
-  );
+var token = JSON.parse(localStorage.getItem("token"));
+if (token) {
+  axios.defaults.headers.common["Authorization"] =
+    `bearer ` + token.accessToken;
 }
 
-async function testAddUser() {
-    let data = await getUserList();
-    data = JSON.stringify(data, null, "\t");
-    fs.writeFile(
-      "C:/Users/admin/OneDrive/Documents/VisualStudio2019/Js/ES6/React/ClassManager/class-manager/src/Constant/fetchData/users.json",
-      data,
-      "utf-8",
-      function (err) {
-        if (err) {
-          throw err;
-        }
-        console.log("Saved!");
-      }
-    );
-  }
+const Http = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  headers: {
+    accept: "application/json",
+    "ngrok-skip-browser-warning": "69420",
+  },
+});
 
-async function getUserList() {
-  var response = await fetch(
-    `https://7b93-27-72-100-200.ngrok-free.app/api/v1/account`
-  );
-  var data = await response.json();
+const headers = {
+  accept: "application/json",
+  "ngrok-skip-browser-warning": "69420",
+};
 
-  let Users = [];
-  data.data.map((elem) => {
-    let user = {
-      id: elem.id,
-      user: elem.user,
-      role: elem.role,
-      email: elem.email,
-      active: elem.active,
+async function testGetAcc() {
+  let id = "455d91a5-9528-42c4-9249-08dc892ec974";
+  let data = await getAcc(id);
+
+  data = JSON.stringify(data, null, "\t");
+  console.log(data);
+}
+
+async function testGetAccByEmail() {
+  let email = "ama098540%40gmail.com";
+  let data = await getAccByEmail(email);
+
+  data = JSON.stringify(data, null, "\t");
+  console.log(data);
+}
+
+async function testGetAccList() {
+  let data = await getAccList();
+  data = JSON.stringify(data, null, "\t");
+  console.log(data);
+}
+
+async function testAddAcc() {
+  let newAcc = {
+    email: "vos1rab3.jrm94uhbx8@example.com",
+    password: "defghj123456",
+  };
+  addNewAcc(newAcc);
+}
+
+async function testRenewAcc() {
+  let renewData = {
+    id: "b0a6c630-b653-4521-12c4-08dc8215c167",
+    email: "ama098540@gmail.com",
+    password: "123456789",
+  };
+  renewAcc(renewData);
+}
+
+async function testRemoveAcc() {
+  let id = "455d91a5-9528-42c4-9249-08dc892ec974";
+  removeAcc(id);
+}
+
+async function getAcc(id) {
+  var response = await Http.get(`/api/v1/account/${id}`);
+  response = response.data.data;
+
+  let profile = {
+    accountID: response.id,
+    avatar: response.user.avatar,
+    fullName: response.user.fullName ? response.user.fullName : "No name",
+    lastName: response.user.lastName ? response.user.lastName : "No name",
+    firstName: response.user.firstName ? response.user.firstName : "No name",
+    account: {
+      id: response.id,
+      role: response.role,
+      email: response.email,
+      active: response.active,
+    },
+  };
+  return profile;
+}
+
+async function getAccByEmail(email) {
+  var response = await Http.get(`/api/v1/account/search?Email=${email}`);
+  response = response.data.data;
+
+  let profile = {
+    accountID: response.id,
+    avatar: response.user.avatar,
+    fullName: response.user.fullName ? response.user.fullName : "No name",
+    lastName: response.user.lastName ? response.user.lastName : "No name",
+    firstName: response.user.firstName ? response.user.firstName : "No name",
+    account: {
+      id: response.id,
+      role: response.role,
+      email: response.email,
+      active: response.active,
+    },
+  };
+  return profile;
+}
+
+async function getAccList() {
+  var response = await Http.get(`/api/v1/account`);
+  var response = response.data.data;
+
+  let Accs = [];
+  response.map((elem) => {
+    let acc = {
+      accountID: elem.id,
+      avatar: elem.user.avatar,
+      fullName: elem.user.fullName ? elem.user.fullName : "No name",
+      lastName: elem.user.lastName ? elem.user.lastName : "No name",
+      firstName: elem.user.firstName ? elem.user.firstName : "No name",
+      account: {
+        id: elem.id,
+        role: elem.role,
+        email: elem.email,
+        active: elem.active,
+      },
     };
 
-    Users = [...Users, user];
+    Accs = [...Accs, acc];
   });
-
-  return Users;
+  return Accs;
 }
 
-async function addNewUser(newUser) {
-  fetch(`https://7b93-27-72-100-200.ngrok-free.app/api/v1/account`, {
-    method: "POST",
-    body: JSON.stringify(newUser),
-  })
-    .then((res) => {
-      res.json();
+async function addNewAcc(newAcc) {
+  let res;
+
+  await axios
+    .post(
+      `${process.env.REACT_APP_API_URL}/api/v1/account`,
+      JSON.stringify(newAcc),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    .then((response) => {
+      console.log(`Response: ${response}`);
+      console.log(`Status code: ${response.status}`);
+      res = response;
     })
-    .then((json) => {
-      console.log(json);
+    .catch((err) => {
+      console.log(err);
+      res = err;
+    });
+
+  return res;
+}
+
+async function renewAcc(data) {
+  axios
+    .put(
+      `${process.env.REACT_APP_API_URL}/api/v1/account/${data.id}`,
+      JSON.stringify(data),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    .then((response) => {
+      console.log(`Response: ${response}`);
+      console.log(`Status code: ${response.status}`);
     })
     .catch((err) => console.log(err));
 }
 
-//test();
+async function removeAcc(id) {
+  axios
+    .delete(`${process.env.REACT_APP_API_URL}/api/v1/account/${id}`)
+    .then((response) => {
+      console.log(`Response: ${response}`);
+      console.log(`Status code: ${response.status}`);
+    })
+    .catch((err) => console.log(err));
+}
 
-module.exports = { getUserList };
+async function getProfile(token) {
+  var response = await Http.get(`/api/v1/profile`, {
+    headers: { Authorization: `bearer ` + token.accessToken },
+  });
+  response = response.data.data;
+
+  let profile = {
+    accountID: response.id,
+    avatar: response.user.avatar,
+    fullName: response.user.fullName ? response.user.fullName : "No name",
+    lastName: response.user.lastName ? response.user.lastName : "No name",
+    firstName: response.user.firstName ? response.user.firstName : "No name",
+    account: {
+      id: response.id,
+      role: response.role,
+      email: response.email,
+      active: response.active,
+    },
+  };
+  return profile;
+}
+
+//testGetAcc();
+//testGetAccList();
+//testGetAccByEmail();
+//testAddAcc();
+//testRenewAcc();
+
+export {
+  getAcc,
+  getAccList,
+  getAccByEmail,
+  addNewAcc,
+  renewAcc,
+  removeAcc,
+  getProfile,
+};

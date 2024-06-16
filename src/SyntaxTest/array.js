@@ -1,20 +1,44 @@
-const fs = require("fs");
-const reportData = require("../Constant/initialData/report.json");
+const axios = require("axios");
 
-reportData.map((report) => {
-  report.finish = 0;
+const Http = axios.create({
+  baseURL: "https://809b-2402-800-6d3e-a0b4-bd2d-14f1-871e-538e.ngrok-free.app",
+  headers: {
+    accept: "application/json",
+    "ngrok-skip-browser-warning": "69420",
+  },
 });
 
-let inputData = JSON.stringify(reportData, null, "\t");
+async function addNewClass(newClass) {
+  let res;
 
-fs.writeFile(
-  "C:/Users/admin/OneDrive/Documents/VisualStudio2019/Js/ES6/React/ClassManager/class-manager/src/Constant/report1.json",
-  inputData,
-  "utf-8",
-  function (err) {
-    if (err) {
-      throw err;
-    }
-    console.log("Saved!");
-  }
-);
+  await axios
+    .post(`https://809b-2402-800-6d3e-a0b4-bd2d-14f1-871e-538e.ngrok-free.app/api/v1/classroom`, newClass, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      console.log(`Response: ${response}`);
+      console.log(`Status code: ${response.status}`);
+      res = response;
+    })
+    .catch((err) => {
+      console.log(err);
+      res = err;
+    });
+
+  return res;
+}
+
+async function testAddClass() {
+  let newClass = {
+    address: "A-320",
+    note: "This is a new class.",
+    status: "OPEN",
+    lastUsed: "2024-06-19",
+    facilityAmount: 30,
+  };
+  addNewClass(newClass);
+}
+
+testAddClass();

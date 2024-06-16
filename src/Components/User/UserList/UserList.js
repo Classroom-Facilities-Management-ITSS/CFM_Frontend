@@ -1,12 +1,17 @@
 import "./UserList.css";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { Space, Table, Button, Modal, Form, Input, message } from "antd";
-import { EditOutlined, UserOutlined, LockOutlined, AuditOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  UserOutlined,
+  LockOutlined,
+  AuditOutlined,
+} from "@ant-design/icons";
 
-import data from "../../../Constant/initialData/user.json";
+import { addNewAcc, getAccList } from "../../../Constant/User";
 
 const userAttribute = [
   {
@@ -37,8 +42,6 @@ const userAttribute = [
 ];
 
 const UserList = () => {
-  const classesData = data.filter((classroom) => classroom.id != 0);
-
   const [messageApi, contextHolder] = message.useMessage();
   const success = () => {
     messageApi.open({
@@ -52,6 +55,27 @@ const UserList = () => {
       content: "Confirm Password must be the same as new password!",
     });
   };
+  const apiError = () => {
+    messageApi.open({
+      type: "error",
+      content: "API Error! Try to reconnect your API!",
+    });
+  };
+
+  const [userList, setUserList] = useState(null);
+
+  useEffect(() => {
+    async function getList() {
+      let list = await getAccList();
+      setUserList(list);
+    }
+    try {
+      getList();
+    } catch (error) {
+      apiError();
+      console.log(error);
+    }
+  }, []);
 
   const [isAddUser, setIsAddUser] = useState(false);
   const showAddUserModal = () => {
@@ -69,16 +93,16 @@ const UserList = () => {
     let newAccount = {
       email: values.email,
       password: values.password,
-      role: values.role,
-    };
-    let newUser = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      account: newAccount,
     };
 
-    success();
-    setIsAddUser(false);
+    addNewAcc(newAccount).then((res) => {
+      if (res.status == 200) {
+        success();
+        setIsAddUser(false);
+      } else {
+        apiError();
+      }
+    });
   };
 
   return (
@@ -157,7 +181,7 @@ const UserList = () => {
               ]}
             >
               <Input
-                prefix={<AuditOutlined  className="site-form-item-icon" />}
+                prefix={<AuditOutlined className="site-form-item-icon" />}
                 placeholder="First name"
               />
             </Form.Item>
@@ -192,8 +216,8 @@ const UserList = () => {
 
         <Table
           scroll={{ y: 700 }}
+          dataSource={userList}
           columns={userAttribute}
-          dataSource={classesData}
           pagination={{ pageSize: 20 }}
         />
       </div>

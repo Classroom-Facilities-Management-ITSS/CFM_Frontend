@@ -1,14 +1,15 @@
 import "./ReportList.css";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { Space, Table, message, Button } from "antd";
 import { EditOutlined } from "@ant-design/icons";
+import { getReportList } from "../../../Constant/Report";
 
-import usersData from "../../../Constant/initialData/user.json";
-import reportData from "../../../Constant/initialData/report.json";
-import classesData from "../../../Constant/initialData/classroom.json";
+//import usersData from "../../../Constant/initialData/user.json";
+//import reportData from "../../../Constant/initialData/report.json";
+//import classesData from "../../../Constant/initialData/classroom.json";
 
 const ReportList = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -25,6 +26,7 @@ const ReportList = () => {
     });
   };
 
+  /*
   let reportList = [];
   reportData.map((report) => {
     let owner = usersData.filter((user) => user.accountID == report.userID)[0];
@@ -35,17 +37,28 @@ const ReportList = () => {
 
     reportList.push(report);
   });
+  */
+
+  const [reportList, setReportList] = useState(null);
+
+  useEffect(() => {
+    async function getData() {
+      let list = await getReportList();
+      setReportList(list);
+    }
+    getData();
+  }, [])
 
   const reportAttribute = [
     {
       title: "From",
       key: "owner",
-      render: (record) => <div>{record.owner}</div>,
+      render: (record) => <div>{record.account.user.fullname}</div>,
     },
     {
       title: "Location",
       key: "location",
-      render: (record) => <div>{record.location}</div>,
+      render: (record) => <div>{record.classroom.address}</div>,
     },
     {
       title: "Note",

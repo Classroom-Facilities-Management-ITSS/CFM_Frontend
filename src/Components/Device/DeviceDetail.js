@@ -1,20 +1,59 @@
-import "../../output.css";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import { Space, Image, Empty, Button, Input, Flex, Form, message, Table } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import {
+  Flex,
+  Form,
+  Input,
+  Space,
+  Image,
+  Empty,
+  Table,
+  Button,
+  message,
+} from "antd";
+import { EditOutlined, FormOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 
 import Capitalize from "../hook/capitalize";
 
-import devicesData from "../../Constant/initialData/device.json";
-import classesData from "../../Constant/initialData/classroom.json";
+//import devicesData from "../../Constant/initialData/device.json";
+//import classesData from "../../Constant/initialData/classroom.json";
+
+import {
+  getFacility,
+  getFacilityByClassAddress,
+} from "../../Constant/Facility";
 
 const DeviceDetail = () => {
   const params = useParams();
 
+  const [messageApi, contextHolder] = message.useMessage();
+  const info = () => {
+    messageApi.info("Done! Wait for admin to check.");
+  };
+  const error = () => {
+    messageApi.info("Only admin can edit this section!");
+  };
+
+  const [deviceData, setDeviceData] = useState(null);
+  const [othersDevice, setOthersDevice] = useState(null);
+
+  useEffect(() => {
+    async function getData() {
+      let device = await getFacility(params.deviceID);
+      setDeviceData(device);
+
+      let deviceList = await getFacilityByClassAddress(
+        device.classroom.address
+      );
+      let others = deviceList.filter((elem) => elem.id != device.id);
+      setOthersDevice(others);
+    };
+    getData();
+  }, []);
+
+  /*
   const deviceData = devicesData.filter(
     (device) => device.id == params.deviceID
   )[0];
@@ -24,6 +63,9 @@ const DeviceDetail = () => {
   const deviceLocaltion = classesData.filter(
     (localtion) => localtion.id == params.classID
   )[0];
+  */
+
+  const [user, setUser] = useState(localStorage.getItem("user"));
 
   const devicesColumns = [
     {
@@ -53,13 +95,12 @@ const DeviceDetail = () => {
     },
   ];
 
-  const [messageApi, contextHolder] = message.useMessage();
-  const info = () => {
-    messageApi.info("Done! Wait for admin to check.");
-  };
-
   const [editMode, setEditMode] = useState(false);
   function handleEdit() {
+    if (user.account.role == "USER") {
+      error();
+      return 0;
+    }
     setEditMode(true);
   }
   function handleCancel() {
@@ -69,132 +110,138 @@ const DeviceDetail = () => {
   return (
     <div class="m-10">
       {contextHolder}
-      <Space direction="vertical" size={50}>
-        <Form colon={false} onFinish={info} autoComplete="off">
-          <Space size={100}>
-            <Space direction="vertical" size={50}>
-              <Space>
-                <div class="text-2xl font-bold">Device's information</div>
-                <Button style={{ border: "none" }} onClick={handleEdit}>
-                  <EditOutlined style={{ fontSize: 20 }} />
-                </Button>
-              </Space>
-              <Space size={50}>
-                <Space direction="vertical">
-                  <Form.Item
-                    name="name"
-                    label={<div class="font-bold text-xl">Name: </div>}
-                  >
-                    {editMode ? (
-                      <Input defaultValue={Capitalize(deviceData.name)}></Input>
-                    ) : (
-                      <div class="text-xl">{Capitalize(deviceData.name)}</div>
-                    )}
-                  </Form.Item>
+      {deviceData ? (
+        <Space direction="vertical" size={50}>
+          <Form colon={false} onFinish={info} autoComplete="off">
+            <Space size={100}>
+              <Space direction="vertical" size={50}>
+                <Space>
+                  <div class="text-2xl font-bold">Device's information</div>
+                  <Button style={{ border: "none" }} onClick={handleEdit}>
+                    <EditOutlined style={{ fontSize: 20 }} />
+                  </Button>
+                </Space>
+                <Space size={50}>
+                  <Space direction="vertical">
+                    <Form.Item
+                      name="name"
+                      label={<div class="font-bold text-xl">Name: </div>}
+                    >
+                      {editMode ? (
+                        <Input
+                          defaultValue={Capitalize(deviceData.name)}
+                        ></Input>
+                      ) : (
+                        <div class="text-xl">{Capitalize(deviceData.name)}</div>
+                      )}
+                    </Form.Item>
 
-                  <Form.Item
-                    name="lastUsed"
-                    label={<div class="font-bold text-xl">Status:</div>}
-                  >
-                    {editMode ? (
-                      <Input
-                        defaultValue={Capitalize(deviceData.status)}
-                      ></Input>
-                    ) : (
-                      <span class="text-xl">
-                        {Capitalize(deviceData.status)}
-                      </span>
-                    )}
-                  </Form.Item>
+                    <Form.Item
+                      name="lastUsed"
+                      label={<div class="font-bold text-xl">Status:</div>}
+                    >
+                      {editMode ? (
+                        <Input
+                          defaultValue={Capitalize(deviceData.status)}
+                        ></Input>
+                      ) : (
+                        <span class="text-xl">
+                          {Capitalize(deviceData.status)}
+                        </span>
+                      )}
+                    </Form.Item>
+                  </Space>
+
+                  <Space direction="vertical">
+                    <Form.Item
+                      name="status"
+                      label={<div class="font-bold text-xl">Version:</div>}
+                    >
+                      {editMode ? (
+                        <Input defaultValue={deviceData.version}></Input>
+                      ) : (
+                        <span class="text-xl">{deviceData.version}</span>
+                      )}
+                    </Form.Item>
+
+                    <Form.Item
+                      name="facilityAmount"
+                      label={
+                        <div class="font-bold text-xl">Number of devices:</div>
+                      }
+                    >
+                      <div class="text-xl">{deviceData.count}</div>
+                    </Form.Item>
+                  </Space>
                 </Space>
 
-                <Space direction="vertical">
-                  <Form.Item
-                    name="status"
-                    label={<div class="font-bold text-xl">Version:</div>}
-                  >
-                    {editMode ? (
-                      <Input defaultValue={deviceData.version}></Input>
-                    ) : (
-                      <span class="text-xl">{deviceData.version}</span>
-                    )}
-                  </Form.Item>
-
-                  <Form.Item
-                    name="facilityAmount"
-                    label={
-                      <div class="font-bold text-xl">Number of devices:</div>
-                    }
-                  >
-                    <div class="text-xl">{deviceData.count}</div>
-                  </Form.Item>
+                <Space direction="vertical" size="large">
+                  <div class="text-2xl font-bold">Note</div>
+                  {editMode ? (
+                    <Form.Item name="note">
+                      {deviceData.note ? (
+                        <TextArea
+                          rows={5}
+                          style={{ minWidth: 640 }}
+                          defaultValue={deviceData.note}
+                        ></TextArea>
+                      ) : (
+                        <Empty class="text-xl" description={false}></Empty>
+                      )}
+                    </Form.Item>
+                  ) : (
+                    <>
+                      {deviceData.note ? (
+                        <p class="text-xl">{deviceData.note}</p>
+                      ) : (
+                        <Empty class="text-xl" description={false}></Empty>
+                      )}
+                    </>
+                  )}
                 </Space>
               </Space>
 
-              <Space direction="vertical" size="large">
-                <div class="text-2xl font-bold">Note</div>
-                {editMode ? (
-                  <Form.Item name="note">
-                    {deviceData.note ? (
-                      <TextArea
-                        rows={5}
-                        style={{ minWidth: 640 }}
-                        defaultValue={deviceData.note}
-                      ></TextArea>
-                    ) : (
-                      <Empty class="text-xl" description={false}></Empty>
-                    )}
-                  </Form.Item>
-                ) : (
-                  <>
-                    {deviceData.note ? (
-                      <p class="text-xl">{deviceData.note}</p>
-                    ) : (
-                      <Empty class="text-xl" description={false}></Empty>
-                    )}
-                  </>
-                )}
-              </Space>
+              <div class="ml-10">
+                <Image
+                  src={require("../../assets/classroom.png")}
+                  width={200}
+                  height={200}
+                />
+              </div>
             </Space>
 
-            <div class="ml-10">
-              <Image
-                src={require("../../assets/classroom.png")}
-                width={200}
-                height={200}
-              />
-            </div>
-          </Space>
+            <Form.Item>
+              {editMode ? (
+                <Flex style={{ marginTop: 50 }} justify="center" align="center">
+                  <Space size={10}>
+                    <Button type="primary" htmlType="submit">
+                      Submit
+                    </Button>
+                    <Button type="" htmlType="submit" onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                  </Space>
+                </Flex>
+              ) : (
+                <></>
+              )}
+            </Form.Item>
+          </Form>
 
-          <Form.Item>
-            {editMode ? (
-              <Flex style={{ marginTop: 50 }} justify="center" align="center">
-                <Space size={10}>
-                  <Button type="primary" htmlType="submit">
-                    Submit
-                  </Button>
-                  <Button type="" htmlType="submit" onClick={handleCancel}>
-                    Cancel
-                  </Button>
-                </Space>
-              </Flex>
-            ) : (
-              <></>
-            )}
-          </Form.Item>
-        </Form>
-        
-        <Space direction="vertical" size={25}>
-          <div class="text-2xl font-bold">Others devices</div>
-          <Table
-          scroll={{ y: 200 }}
-            columns={devicesColumns}
-            dataSource={othersDevice}
-            style={{ minWidth: 1200 }}
-            pagination={{ pageSize: 10 }}
-          ></Table>
+          <Space direction="vertical" size={25}>
+            <div class="text-2xl font-bold">Others devices</div>
+            <Table
+              scroll={{ y: 200 }}
+              columns={devicesColumns}
+              dataSource={othersDevice}
+              style={{ minWidth: 1200 }}
+              pagination={{ pageSize: 10 }}
+            ></Table>
+          </Space>
         </Space>
-      </Space>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
