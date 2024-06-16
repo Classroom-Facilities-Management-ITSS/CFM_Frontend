@@ -257,6 +257,8 @@ const ClassDetail = () => {
     }
 
     if (changeClassId) {
+      let errOccur = false;
+
       let changeData = {
         changeClassId: changeClassId,
         currentClassId: classData.id,
@@ -267,6 +269,7 @@ const ClassDetail = () => {
           //success();
           //setEditMode(false);
         } else {
+          errOccur = true;
           apiError();
         }
       });
