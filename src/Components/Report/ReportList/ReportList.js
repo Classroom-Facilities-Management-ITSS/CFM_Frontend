@@ -53,7 +53,7 @@ const ReportList = () => {
     {
       title: "From",
       key: "owner",
-      render: (record) => <div>{record.account.user.fullname}</div>,
+      render: (record) => <div>{record.account.user.fullName ? record.account.user.fullName : "No name"}</div>,
     },
     {
       title: "Location",

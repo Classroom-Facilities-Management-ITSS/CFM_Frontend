@@ -1,6 +1,6 @@
 import axios, * as others from "axios";
 
-var token = JSON.parse(localStorage.getItem("token"));
+let token = JSON.parse(localStorage.getItem("token"));
 if (token) {
   axios.defaults.headers.common["Authorization"] =
     `bearer ` + token.accessToken;
@@ -14,65 +14,21 @@ const Http = axios.create({
   },
 });
 
-const headers = {
-  accept: "application/json",
-  "ngrok-skip-browser-warning": "69420",
-};
-
-async function testGetAcc() {
-  let id = "455d91a5-9528-42c4-9249-08dc892ec974";
-  let data = await getAcc(id);
-
-  data = JSON.stringify(data, null, "\t");
-  console.log(data);
-}
-
-async function testGetAccByEmail() {
-  let email = "ama098540%40gmail.com";
-  let data = await getAccByEmail(email);
-
-  data = JSON.stringify(data, null, "\t");
-  console.log(data);
-}
-
-async function testGetAccList() {
-  let data = await getAccList();
-  data = JSON.stringify(data, null, "\t");
-  console.log(data);
-}
-
-async function testAddAcc() {
-  let newAcc = {
-    email: "vos1rab3.jrm94uhbx8@example.com",
-    password: "defghj123456",
-  };
-  addNewAcc(newAcc);
-}
-
-async function testRenewAcc() {
-  let renewData = {
-    id: "b0a6c630-b653-4521-12c4-08dc8215c167",
-    email: "ama098540@gmail.com",
-    password: "123456789",
-  };
-  renewAcc(renewData);
-}
-
-async function testRemoveAcc() {
-  let id = "455d91a5-9528-42c4-9249-08dc892ec974";
-  removeAcc(id);
-}
-
 async function getAcc(id) {
-  var response = await Http.get(`/api/v1/account/${id}`);
+  let response = await Http.get(`/api/v1/account/${id}`);
   response = response.data.data;
 
+  let dob = response.user.dob ? response.user.dob.split("T")[0] : "0001-01-01";
   let profile = {
     accountID: response.id,
     avatar: response.user.avatar,
     fullName: response.user.fullName ? response.user.fullName : "No name",
     lastName: response.user.lastName ? response.user.lastName : "No name",
     firstName: response.user.firstName ? response.user.firstName : "No name",
+    dob: dob,
+    department: response.user.department
+      ? response.user.department
+      : "No department",
     account: {
       id: response.id,
       role: response.role,
@@ -84,15 +40,20 @@ async function getAcc(id) {
 }
 
 async function getAccByEmail(email) {
-  var response = await Http.get(`/api/v1/account/search?Email=${email}`);
+  let response = await Http.get(`/api/v1/account/search?Email=${email}`);
   response = response.data.data;
 
+  let dob = response.user.dob ? response.user.dob.split("T")[0] : "0001-01-01";
   let profile = {
     accountID: response.id,
     avatar: response.user.avatar,
     fullName: response.user.fullName ? response.user.fullName : "No name",
     lastName: response.user.lastName ? response.user.lastName : "No name",
     firstName: response.user.firstName ? response.user.firstName : "No name",
+    dob: dob,
+    department: response.user.department
+      ? response.user.department
+      : "No department",
     account: {
       id: response.id,
       role: response.role,
@@ -104,32 +65,56 @@ async function getAccByEmail(email) {
 }
 
 async function getAccList() {
-  var response = await Http.get(`/api/v1/account`);
-  var response = response.data.data;
+  let page = 1;
+  let limit = 10;
+  let listData = [];
+  let hasMore = true;
 
-  let Accs = [];
-  response.map((elem) => {
-    let acc = {
-      accountID: elem.id,
-      avatar: elem.user.avatar,
-      fullName: elem.user.fullName ? elem.user.fullName : "No name",
-      lastName: elem.user.lastName ? elem.user.lastName : "No name",
-      firstName: elem.user.firstName ? elem.user.firstName : "No name",
-      account: {
-        id: elem.id,
-        role: elem.role,
-        email: elem.email,
-        active: elem.active,
-      },
-    };
+  while (hasMore) {
+    let Accs = [];
 
-    Accs = [...Accs, acc];
-  });
-  return Accs;
+    let response = await Http.get(`/api/v1/account`, {
+      params: { page, limit },
+    });
+    response = response.data.data;
+
+    response.map((elem) => {
+      let dob = elem.user.dob ? elem.user.dob.split("T")[0] : "0001-01-01";
+      let acc = {
+        accountID: elem.id,
+        avatar: elem.user.avatar,
+        fullName: elem.user.fullName ? elem.user.fullName : "No name",
+        lastName: elem.user.lastName ? elem.user.lastName : "No name",
+        firstName: elem.user.firstName ? elem.user.firstName : "No name",
+        dob: dob,
+        department: elem.user.department
+          ? elem.user.department
+          : "No department",
+        account: {
+          id: elem.id,
+          role: elem.role,
+          email: elem.email,
+          active: elem.active,
+        },
+      };
+
+      Accs = [...Accs, acc];
+    });
+
+    if (response.length == limit) {
+      page += 1;
+      listData.push(...Accs);
+    } else {
+      hasMore = false;
+      listData.push(...Accs);
+    }
+  }
+
+  return listData;
 }
 
 async function addNewAcc(newAcc) {
-  let res;
+  let res = {};
 
   await axios
     .post(
@@ -155,7 +140,9 @@ async function addNewAcc(newAcc) {
 }
 
 async function renewAcc(data) {
-  axios
+  let res;
+
+  await axios
     .put(
       `${process.env.REACT_APP_API_URL}/api/v1/account/${data.id}`,
       JSON.stringify(data),
@@ -166,34 +153,47 @@ async function renewAcc(data) {
       }
     )
     .then((response) => {
-      console.log(`Response: ${response}`);
-      console.log(`Status code: ${response.status}`);
+      res = response;
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res = err;
+    });
+
+  return res;
 }
 
 async function removeAcc(id) {
-  axios
+  let res;
+
+  await axios
     .delete(`${process.env.REACT_APP_API_URL}/api/v1/account/${id}`)
     .then((response) => {
-      console.log(`Response: ${response}`);
-      console.log(`Status code: ${response.status}`);
+      res = response;
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res = err;
+    });
+
+  return res;
 }
 
 async function getProfile(token) {
-  var response = await Http.get(`/api/v1/profile`, {
+  let response = await Http.get(`/api/v1/profile`, {
     headers: { Authorization: `bearer ` + token.accessToken },
   });
   response = response.data.data;
 
+  let dob = response.user.dob ? response.user.dob.split("T")[0] : "0001-01-01";
   let profile = {
     accountID: response.id,
     avatar: response.user.avatar,
     fullName: response.user.fullName ? response.user.fullName : "No name",
     lastName: response.user.lastName ? response.user.lastName : "No name",
     firstName: response.user.firstName ? response.user.firstName : "No name",
+    dob: dob,
+    department: response.user.department
+      ? response.user.department
+      : "No department",
     account: {
       id: response.id,
       role: response.role,
@@ -204,11 +204,31 @@ async function getProfile(token) {
   return profile;
 }
 
-//testGetAcc();
-//testGetAccList();
-//testGetAccByEmail();
-//testAddAcc();
-//testRenewAcc();
+async function renewProfile(data) {
+  let res;
+
+  await axios
+    .put(
+      `${process.env.REACT_APP_API_URL}/api/v1/profile`,
+      JSON.stringify(data),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    .then((response) => {
+      console.log(`Response: ${response}`);
+      console.log(`Status code: ${response.status}`);
+      res = response;
+    })
+    .catch((err) => {
+      console.log(err);
+      res = 404;
+    });
+
+  return res;
+}
 
 export {
   getAcc,
@@ -218,4 +238,5 @@ export {
   renewAcc,
   removeAcc,
   getProfile,
+  renewProfile,
 };

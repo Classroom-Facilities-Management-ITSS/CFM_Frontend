@@ -28,6 +28,7 @@ import {
   LockOutlined,
   UserOutlined,
   LaptopOutlined,
+  ScheduleOutlined,
   SolutionOutlined,
   PoweroffOutlined,
   DashboardOutlined,
@@ -45,6 +46,7 @@ import ReportList from "../Report/ReportList/ReportList.js";
 import UserList from "../User/UserList/UserList.js";
 import UserDetail from "../User/UserDetail/UserDetail.js";
 
+import ScheduleList from "../Schedule/ScheduleList.js";
 import { ClassList } from "../Class/ClassList/ClassList.js";
 import ClassDetail from "../Class/ClassDetail/ClassDetail.js";
 
@@ -93,12 +95,22 @@ const NavBar = (props) => {
         }
       },
     },
+    props.user.account.role == "ADMIN"
+      ? {
+          key: `classrooms`,
+          icon: React.createElement(LaptopOutlined),
+          label: `Classroom`,
+          onClick: () => {
+            nav("/classList");
+          },
+        }
+      : null,
     {
-      key: `classrooms`,
-      icon: React.createElement(LaptopOutlined),
-      label: `Classroom`,
+      key: `schedule`,
+      icon: React.createElement(ScheduleOutlined),
+      label: `Schedule`,
       onClick: () => {
-        nav("/classList");
+        nav("/schedule");
       },
     },
     {
@@ -106,7 +118,7 @@ const NavBar = (props) => {
       icon: React.createElement(NotificationOutlined),
       label: `Storage`,
       onClick: () => {
-        //nav("/detail/classroom/0");
+        nav(`/detail/classroom/${process.env.REACT_APP_STORAGE_ID}`);
       },
     },
     {
@@ -129,7 +141,7 @@ const NavBar = (props) => {
       <Sider width={200}>
         <Menu
           mode="inline"
-          defaultSelectedKeys={["dashboard"]}
+          //defaultSelectedKeys={["dashboard"]}
           style={{
             padding: 5,
             height: "100%",
@@ -392,7 +404,7 @@ const App = () => {
 
       <>
         <Layout>
-          <NavBar user={user}></NavBar>
+          {user ? <NavBar user={user}></NavBar> : <></>}
 
           <Layout
             style={{
@@ -436,6 +448,11 @@ const App = () => {
                   <Route
                     path="/detail/classroom/:classID"
                     element={<ClassDetail></ClassDetail>}
+                  ></Route>
+
+                  <Route
+                    path="/schedule"
+                    element={<ScheduleList></ScheduleList>}
                   ></Route>
 
                   <Route

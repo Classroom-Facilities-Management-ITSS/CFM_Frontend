@@ -31,17 +31,23 @@ const ClassTable = (props) => {
       getClassess();
     } else {
       let classes = [];
+
+      props.schedule.sort((a,b) => a.startTime - b.startTime);
       props.schedule.map((elem) => {
         let room = {
           id: elem.classroomId,
+          time: elem.time,
+          subject: elem.subject,
+          note: elem.classroom.note,
+          status: elem.classroom.status,
           address: elem.classroom.address,
           lastUsed: elem.classroom.lastUsed,
-          status: elem.classroom.status,
-          note: elem.classroom.note,
           facilityAmount: elem.classroom.facilityAmount,
         };
-        classes = [...classes, room]
+
+        classes = [...classes, room];
       });
+
       setClassesData(classes);
     }
   }, []);
@@ -55,16 +61,27 @@ const ClassTable = (props) => {
         <Link to={`/detail/classroom/${record.id}`}>{text}</Link>
       ),
     },
-    props.schedule
+    props.schedule && !props.list
       ? {
           title: "Time",
           key: "time",
-          render: (record) => <div>{record.time}</div>,
+          render: (record) => (
+            <>
+              <div>{record.time.split("\n")[0]}</div>
+              <div>{record.time.split("\n")[1]}</div>
+            </>
+          ),
         }
       : {
           title: "Last Used",
           dataIndex: "lastUsed",
           key: "lastUsed",
+          render: (text) => (
+            <>
+              <div>{text.split("T")[0]}</div>
+              <div>{text.split("T")[1]}</div>
+            </>
+          )
         },
     {
       title: "Num of devices",
@@ -142,7 +159,7 @@ const ClassList = () => {
       maxSize: 0,
       note: "",
     };
-    
+
     setIsAddClass(false);
     addNewClass(newClass).then((res) => {
       if (res.status == 200) {
@@ -226,7 +243,18 @@ const ClassList = () => {
             </Form.Item>
           </Form>
         </Modal>
-        {user.account.role == "ADMIN" ? <ClassTable></ClassTable> : <ClassTable schedule={schedule}></ClassTable>}
+
+        {schedule ? (
+          <>
+            {user.account.role == "ADMIN" ? (
+              <ClassTable></ClassTable>
+            ) : (
+              <ClassTable schedule={schedule} list={true}></ClassTable>
+            )}
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     </Space>
   );

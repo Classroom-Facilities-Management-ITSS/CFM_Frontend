@@ -8,42 +8,6 @@ const Http = axios.create({
   },
 });
 
-async function testGetClass() {
-  let id = "";
-  let data = await getClass(id);
-
-  data = JSON.stringify(data, null, "\t");
-  console.log(data);
-}
-
-async function testAddClass() {
-  let newClass = {
-    address: "New Address",
-    note: "This is a new class.",
-    status: "normal",
-    lastUsed: "2024-06-19",
-    facilityAmount: 30,
-  };
-  addNewClass(newClass);
-}
-
-async function testRenewClass() {
-  let renewData = {
-    id: "class_id",
-    address: "Updated Address",
-    note: "This is an updated class.",
-    status: "normal",
-    lastUsed: "2024-06-20",
-    facilityAmount: 35,
-  };
-  renewClass(renewData);
-}
-
-async function testRemoveClass() {
-  let id = "class_id";
-  removeClass(id);
-}
-
 async function getClass(id) {
   let response = await Http.get(`/api/v1/classroom/${id}`);
   return response.data.data;
@@ -98,7 +62,7 @@ async function addNewClass(newClass) {
 async function renewClass(data) {
   let res;
 
-  axios
+  await axios
     .put(
       `${process.env.REACT_APP_API_URL}/api/v1/classroom/${data.id}`,
       JSON.stringify(data),
@@ -122,13 +86,18 @@ async function renewClass(data) {
 }
 
 async function removeClass(id) {
-  axios
+  let res;
+
+  await axios
     .delete(`${process.env.REACT_APP_API_URL}/api/v1/classroom/${id}`)
     .then((response) => {
-      console.log(`Response: ${response}`);
-      console.log(`Status code: ${response.status}`);
+      res = response;
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res = err;
+    });
+
+  return res;
 }
 
 async function getSuggestion(id) {
@@ -136,11 +105,24 @@ async function getSuggestion(id) {
   return response.data.data;
 }
 
-// testGetClass();
-// testGetClassList();
-// testAddClass();
-// testRenewClass();
-// testRemoveClass();
+async function changeClassroom(data) {
+  let res;
+
+  await axios
+    .post(`${process.env.REACT_APP_API_URL}/api/v1/suggest`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      res = response;
+    })
+    .catch((err) => {
+      res = err;
+    });
+
+  return res;
+}
 
 export {
   getClass,
@@ -149,4 +131,5 @@ export {
   renewClass,
   removeClass,
   getSuggestion,
+  changeClassroom,
 };

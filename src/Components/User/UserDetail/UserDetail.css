@@ -1,3 +1,25 @@
 .ant-form-item {
-    min-width: 350px;
+  min-width: 350px;
+}
+
+.m-10 {
+  margin: 2.5rem /* 40px */;
+}
+
+.ml-10 {
+  margin-left: 2.5rem /* 40px */;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-xl {
+  font-size: 1.25rem /* 20px */;
+  line-height: 1.75rem /* 28px */;
+}
+
+.text-2xl {
+  font-size: 1.5rem /* 24px */;
+  line-height: 2rem /* 32px */;
 }

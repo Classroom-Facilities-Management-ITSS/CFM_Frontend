@@ -10,32 +10,40 @@ import Capitalize from "../../hook/capitalize";
 
 import { ClassTable } from "../../Class/ClassList/ClassList";
 
-import { getAcc } from "../../../Constant/User";
+import { getAcc, renewProfile } from "../../../Constant/User";
 import { getScheduleByEmail } from "../../../Constant/Schedule";
 
 const UserDetail = () => {
   const params = useParams();
 
-  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("user")));
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
   const [userSchedule, setUserSchedule] = useState(null);
 
   useEffect(() => {
     async function getData() {
       let data = await getAcc(params.accountID);
       setUserData(data);
-    }
-    getData();
 
-    async function getSchedule() {
       let schedule = await getScheduleByEmail(userData.account.email);
       setUserSchedule(schedule);
     }
-    getSchedule();
+    getData();
   }, []);
 
   const [messageApi, contextHolder] = message.useMessage();
   const info = () => {
     messageApi.info("Edit successfully, wait for admin to approve!");
+  };
+  const apiError = () => {
+    messageApi.open({
+      type: "error",
+      content: "API Error! Try to reconnect your API!",
+    });
+  };
+  const noChange = () => {
+    messageApi.error("Nothing change, undo your request!");
   };
 
   const [editMode, setEditMode] = useState(false);
@@ -45,13 +53,55 @@ const UserDetail = () => {
   function handleCancel() {
     setEditMode(false);
   }
+  const onFinishEdit = (values) => {
+    let isChange = false;
+    let newUserInfo = userData;
+
+    if (values.name) {
+      isChange = true;
+      newUserInfo.firstName = values.name.split(" ")[0];
+      newUserInfo.lastName = values.name.split(" ")[1];
+      newUserInfo.fullName = values.name;
+    }
+    if (values.dob) {
+      isChange = true;
+      newUserInfo.dob = values.dob;
+    }
+    if (values.department) {
+      isChange = true;
+      newUserInfo.department = values.department;
+    }
+
+    if (isChange) {
+      renewProfile(newUserInfo).then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          info();
+          setEditMode(false);
+
+          if (userData.account.role == "USER") {
+            userData.department = newUserInfo.department;
+            userData.firstName = newUserInfo.firstName;
+            userData.lastName = newUserInfo.lastName;
+            userData.fullName = newUserInfo.fullName;
+            userData.dob = newUserInfo.dob;
+
+            localStorage.setItem("user", JSON.stringify(userData, null, "\t"));
+          }
+        } else {
+          apiError();
+        }
+      });
+    } else {
+      noChange();
+    }
+  };
 
   return (
     <div class="m-10">
       {contextHolder}
       {userData ? (
         <Space direction="vertical" size={50}>
-          <Form colon={false} onFinish={info} autoComplete="off">
+          <Form colon={false} onFinish={onFinishEdit} autoComplete="off">
             <Space size={100}>
               <Space direction="vertical" size={50}>
                 <Space>
@@ -81,10 +131,17 @@ const UserDetail = () => {
                       name="role"
                       label={<div class="font-bold text-xl">Role:</div>}
                     >
+                      <span class="text-xl">{userData.account.role}</span>
+                    </Form.Item>
+
+                    <Form.Item
+                      name="dob"
+                      label={<div class="font-bold text-xl">Birthday:</div>}
+                    >
                       {editMode ? (
-                        <Input defaultValue={userData.account.role}></Input>
+                        <Input defaultValue={userData.dob}></Input>
                       ) : (
-                        <span class="text-xl">{userData.account.role}</span>
+                        <div class="text-xl">{userData.dob}</div>
                       )}
                     </Form.Item>
                   </Space>
@@ -98,7 +155,7 @@ const UserDetail = () => {
                         <Input defaultValue={userData.account.email}></Input>
                       ) : (
                         <span class="text-xl">
-                          {Capitalize(userData.account.email)}
+                          {userData.account.email}
                         </span>
                       )}
                     </Form.Item>
@@ -114,6 +171,19 @@ const UserDetail = () => {
                           ? "Activated"
                           : "Need activation"}
                       </div>
+                    </Form.Item>
+
+                    <Form.Item
+                      name="department"
+                      label={<div class="font-bold text-xl">Department:</div>}
+                    >
+                      {editMode ? (
+                        <Input defaultValue={userData.department}></Input>
+                      ) : (
+                        <span class="text-xl">
+                          {Capitalize(userData.department)}
+                        </span>
+                      )}
                     </Form.Item>
                   </Space>
                 </Space>
@@ -148,11 +218,15 @@ const UserDetail = () => {
 
           <Space direction="vertical" size={25}>
             <div class="text-2xl font-bold">Schedule</div>
-            <ClassTable
-              schedule={userSchedule}
-              pageSize={5}
-              scroll={300}
-            ></ClassTable>
+            {userSchedule ? (
+              <ClassTable
+                schedule={userSchedule}
+                pageSize={5}
+                scroll={300}
+              ></ClassTable>
+            ) : (
+              <></>
+            )}
           </Space>
         </Space>
       ) : (

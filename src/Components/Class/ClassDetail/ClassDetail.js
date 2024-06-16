@@ -1,5 +1,8 @@
 import "./ClassDetail.css";
 
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -17,22 +20,19 @@ import {
   message,
   Dropdown,
 } from "antd";
-import { EditOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
+import { EditOutlined, DownloadOutlined } from "@ant-design/icons";
 
 import Capitalize from "../../hook/capitalize";
 
-//import schedule from "../../../Constant/initialData/schedule.json";
-//import devicesData from "../../../Constant/initialData/device.json";
-//import classesData from "../../../Constant/initialData/classroom.json";
-
 import {
+  changeClassroom,
   getClass,
   getSuggestion,
   renewClass,
 } from "../../../Constant/Classrooms";
-import { getFacilityByClassAddress } from "../../../Constant/Facility";
 import { addNewReport } from "../../../Constant/Report";
+import { getFacilityByClassAddress } from "../../../Constant/Facility";
 
 const AddReport = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -66,7 +66,7 @@ const AddReport = (props) => {
     };
 
     addNewReport(newReport).then((res) => {
-      if (res.status == 200) {
+      if (res.status >= 200 && res.status < 300) {
         success();
         setIsAddReport(false);
       } else {
@@ -77,17 +77,13 @@ const AddReport = (props) => {
   };
 
   return (
-    <Space direction="vertical" size={50}>
+    <>
       {contextHolder}
-      <Space id="header-container">
-        <div className="text-2xl font-bold">Report Information</div>
+      <Button style={{ border: "none" }} onClick={showAddReportModal}>
+        <EditOutlined style={{ fontSize: 20 }} />
+      </Button>
 
-        <Button style={{ border: "none" }} onClick={showAddReportModal}>
-          <EditOutlined style={{ fontSize: 20 }} />
-        </Button>
-      </Space>
-
-      <div className="px-10">
+      <div>
         <Modal
           title="New Report"
           open={isAddReport}
@@ -128,7 +124,7 @@ const AddReport = (props) => {
           </Form>
         </Modal>
       </div>
-    </Space>
+    </>
   );
 };
 
@@ -153,51 +149,7 @@ const ClassDetail = () => {
   const [changeInfo, setChangeInfo] = useState(null);
   const [changeOption, setChangeOption] = useState(null);
   const [classDevices, setClassDevices] = useState(null);
-  //const [classSchedule, setClassSchedule] = useState(null);
-  //const [defaultDropValue, setDefaultDropValue] = useState("Status");
-
-  /*
-  useEffect(() => {
-    let thisRoom = classesData.filter(
-      (classroom) => classroom.id == params.classID
-    )[0];
-    if (thisRoom.address == "Storage") {
-      thisRoom.address = "Storage A-666";
-    }
-    setClassData(thisRoom);
-
-    let roomDevices = devicesData.filter(
-      (device) => device.classID == params.classID
-    );
-    setClassDevices(roomDevices);
-
-    let roomSchedule = schedule.filter(
-      (time) => time.classroomId == thisRoom.id
-    );
-    setClassSchedule(roomSchedule);
-
-    let changeableRoomID = schedule.filter(
-      (room) => room.time != roomSchedule.time
-    );
-    let options = [];
-    let changeableRooms = [];
-    changeableRoomID.map((id) => {
-      let availableRoom = classesData.filter(
-        (room) => room.id == id.classroomId
-      )[0];
-      let roomName = {
-        label: availableRoom.address,
-        value: availableRoom.address,
-      };
-
-      options.push(roomName);
-      changeableRooms.push(availableRoom);
-    });
-
-    setChangeOption(options);
-    setChangeInfo(changeableRooms);
-  }, []);
-  */
+  const [changeClassId, setChangeClassId] = useState(null);
 
   useEffect(() => {
     async function getClassData(id) {
@@ -207,7 +159,6 @@ const ClassDetail = () => {
       let facilities = await getFacilityByClassAddress(room.address);
       setClassDevices(facilities);
 
-      /*
       let subRooms = await getSuggestion(id);
       setChangeInfo(subRooms);
 
@@ -220,7 +171,6 @@ const ClassDetail = () => {
         options.push(roomName);
       });
       setChangeOption(options);
-      */
     }
     getClassData(params.classID);
   }, []);
@@ -255,6 +205,7 @@ const ClassDetail = () => {
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
+  const [form] = Form.useForm();
   const [editMode, setEditMode] = useState(false);
   function handleEdit() {
     if (user.account.role == "USER") {
@@ -264,21 +215,26 @@ const ClassDetail = () => {
     setEditMode(true);
   }
   function handleCancel() {
+    form.resetFields();
     setEditMode(false);
     setSwitchRoom(false);
   }
+
   const [switchRoom, setSwitchRoom] = useState(false);
   const onChangeToFix = (e) => {
     if (e == "fixing") {
       setSwitchRoom(true);
     }
   };
-
   const onFinishSwitchRoom = (values) => {
     setSwitchRoom(false);
-    classData.note += `\nAll lecturers teaching in this room need to switch to ${values.address} room!`;
-  };
+    classData.note += `\nAll lecturers teaching in this room need to switch to ${values.address} room!\n${values.note}`;
 
+    let changeClassId = changeInfo.filter(
+      (elem) => elem.address == values.address
+    )[0].id;
+    setChangeClassId(changeClassId);
+  };
   const onFinishEdit = (values) => {
     let isChange = false;
     let newClassInfo = classData;
@@ -300,9 +256,25 @@ const ClassDetail = () => {
       newClassInfo.note = values.note;
     }
 
+    if (changeClassId) {
+      let changeData = {
+        changeClassId: changeClassId,
+        currentClassId: classData.id,
+      };
+
+      changeClassroom(changeData).then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          //success();
+          //setEditMode(false);
+        } else {
+          apiError();
+        }
+      });
+    }
+
     if (isChange) {
       renewClass(newClassInfo).then((res) => {
-        if (res.status == 200) {
+        if (res.status >= 200 && res.status < 300) {
           success();
           setEditMode(false);
         } else {
@@ -312,6 +284,23 @@ const ClassDetail = () => {
     } else {
       noChange();
     }
+  };
+
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(classDevices);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Device List");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const fileName = "device_list.xlsx";
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+
+    saveAs(blob, fileName);
   };
 
   return (
@@ -326,7 +315,7 @@ const ClassDetail = () => {
               onCancel={handleCancel}
               footer={null}
             >
-              <Form name="changeRoom" onFinish={onFinishSwitchRoom}>
+              <Form form={form} name="changeRoom" onFinish={onFinishSwitchRoom}>
                 <Form.Item
                   name="address"
                   rules={[
@@ -336,9 +325,10 @@ const ClassDetail = () => {
                     },
                   ]}
                 >
-                  <Dropdown menu={{ items: changeOption }}>
-                    <Input placeholder="Address" style={{ marginTop: 25 }} />
-                  </Dropdown>
+                  <Select
+                    options={changeOption}
+                    style={{ marginTop: 25 }}
+                  ></Select>
                 </Form.Item>
 
                 <Form.Item
@@ -368,7 +358,12 @@ const ClassDetail = () => {
           )}
 
           {classData ? (
-            <Form colon={false} onFinish={onFinishEdit} autoComplete="off">
+            <Form
+              form={form}
+              colon={false}
+              onFinish={onFinishEdit}
+              autoComplete="off"
+            >
               <Space size={100}>
                 <Space direction="vertical" size={50}>
                   <Space>
@@ -413,7 +408,10 @@ const ClassDetail = () => {
                         {editMode ? (
                           <Input defaultValue={classData.lastUsed}></Input>
                         ) : (
-                          <span class="text-xl">{classData.lastUsed}</span>
+                          <span class="text-xl">
+                            {classData.lastUsed.split("T")[0]} at{" "}
+                            {classData.lastUsed.split("T")[1]}
+                          </span>
                         )}
                       </Form.Item>
                     </Space>
@@ -525,7 +523,29 @@ const ClassDetail = () => {
           )}
 
           <Space direction="vertical" size={25}>
-            <div class="text-2xl font-bold">Devices list</div>
+            <Space direction="horizontal">
+              <div class="text-2xl font-bold">Devices list</div>
+
+              <AddReport
+                user={user}
+                classroom={classData}
+                devices={classDevices}
+              />
+
+              <Button
+                type="default"
+                icon={<DownloadOutlined />}
+                onClick={exportToExcel}
+                style={{
+                  borderRadius: "5px",
+                  fontWeight: "bold",
+                  backgroundColor: "#f0f0f0",
+                  color: "#000",
+                }}
+              >
+                Export to Excel
+              </Button>
+            </Space>
 
             {classDevices ? (
               <Table
@@ -536,12 +556,6 @@ const ClassDetail = () => {
             ) : (
               <></>
             )}
-
-            <AddReport
-              user={user}
-              classroom={classData}
-              devices={classDevices}
-            />
           </Space>
         </Space>
       ) : (

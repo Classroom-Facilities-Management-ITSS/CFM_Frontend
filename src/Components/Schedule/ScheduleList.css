@@ -1,0 +1,9 @@
+.px-10 {
+  padding-left: 2.5rem /* 40px */;
+  padding-right: 2.5rem /* 40px */;
+}
+
+#header-container {
+  margin-top: 50px;
+  margin-left: 50px;
+}

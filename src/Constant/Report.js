@@ -27,7 +27,7 @@ async function getReportList() {
 async function addNewReport(newReport) {
   let res;
 
-  axios
+  await axios
     .post(
       `${process.env.REACT_APP_API_URL}/api/v1/report`,
       JSON.stringify(newReport),
@@ -38,12 +38,9 @@ async function addNewReport(newReport) {
       }
     )
     .then((response) => {
-      console.log(`Response: ${response}`);
-      console.log(`Status code: ${response.status}`);
       res = response;
     })
     .catch((err) => {
-      console.log(err);
       res = err;
     });
 

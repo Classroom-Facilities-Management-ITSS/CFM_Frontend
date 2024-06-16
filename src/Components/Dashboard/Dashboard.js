@@ -18,7 +18,7 @@ const Dashboard = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
   if (user.account.role == "USER") {
-    reportData = reportData.filter((report) => report.userID == user.accountID);
+    //reportData = reportData.filter((report) => report.userID == user.accountID);
   }
 
   return (
