@@ -1,4 +1,6 @@
 import "./ClassDetail.css";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -17,7 +19,8 @@ import {
   message,
   Dropdown,
 } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+
+import { EditOutlined,DownloadOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 
 import Capitalize from "../../hook/capitalize";
@@ -313,6 +316,27 @@ const ClassDetail = () => {
       noChange();
     }
   };
+  const exportToExcel = () => {
+    // Tạo worksheet từ mảng classDevices
+    const worksheet = XLSX.utils.json_to_sheet(classDevices);
+    
+    // Tạo workbook mới
+    const workbook = XLSX.utils.book_new();
+    
+    // Thêm worksheet vào workbook với tên "Device List"
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Device List");
+    
+    // Chuyển đổi workbook thành mảng dữ liệu Excel
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    
+    // Tạo Blob từ mảng dữ liệu Excel
+    const fileName = "device_list.xlsx";
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    
+    // Tải xuống file Excel sử dụng thư viện file-saver
+    saveAs(blob, fileName);
+  };
+  
 
   return (
     <div class="m-10">
@@ -383,6 +407,7 @@ const ClassDetail = () => {
                         <></>
                       )}
                     </div>
+                    
                     <Button style={{ border: "none" }} onClick={handleEdit}>
                       <EditOutlined style={{ fontSize: 20 }} />
                     </Button>
@@ -525,7 +550,22 @@ const ClassDetail = () => {
           )}
 
           <Space direction="vertical" size={25}>
-            <div class="text-2xl font-bold">Devices list</div>
+            <div class="text-2xl font-bold">
+
+            <Space size={25}>
+  <div className="text-2xl font-bold">Devices list</div>
+  <Button
+    type="default"
+    icon={<DownloadOutlined />}
+    onClick={exportToExcel}
+    style={{ borderRadius: '5px', fontWeight: 'bold', backgroundColor: '#f0f0f0', color: '#000' }}
+  >
+    Export to Excel
+  </Button>
+</Space>
+
+            </div>
+            
 
             {classDevices ? (
               <Table

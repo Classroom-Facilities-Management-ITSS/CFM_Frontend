@@ -1,4 +1,4 @@
-import axios, * as others from "axios";
+import axios from "axios";
 
 const Http = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -49,24 +49,34 @@ async function getClass(id) {
   return response.data.data;
 }
 
-async function getClassList() {
-  let response = await Http.get(`/api/v1/classroom`);
-  return response.data.data;
+async function getClassList(page = 1, limit = 1000) {
+  let allClasses = [];
+  let hasMore = true;
+
+  while (hasMore) {
+    let response = await Http.get(`/api/v1/classroom`, {
+      params: { page, limit },
+    });
+    let data = response.data.data;
+    allClasses = [...allClasses, ...data];
+
+    hasMore = data.length === limit;
+    if (hasMore) {
+      page++;
+    }
+  }
+
+  return allClasses;
 }
 
 async function addNewClass(newClass) {
   let res;
 
-  await axios
-    .post(
-      `${process.env.REACT_APP_API_URL}/api/v1/classroom`,
-      JSON.stringify(newClass),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
+  await Http.post(`/api/v1/classroom`, JSON.stringify(newClass), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
     .then((response) => {
       console.log(`Response: ${response}`);
       console.log(`Status code: ${response.status}`);
@@ -83,16 +93,11 @@ async function addNewClass(newClass) {
 async function renewClass(data) {
   let res;
 
-  axios
-    .put(
-      `${process.env.REACT_APP_API_URL}/api/v1/classroom/${data.id}`,
-      JSON.stringify(data),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
+  await Http.put(`/api/v1/classroom/${data.id}`, JSON.stringify(data), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
     .then((response) => {
       console.log(`Response: ${response}`);
       console.log(`Status code: ${response.status}`);
@@ -107,8 +112,7 @@ async function renewClass(data) {
 }
 
 async function removeClass(id) {
-  axios
-    .delete(`${process.env.REACT_APP_API_URL}/api/v1/classroom/${id}`)
+  await Http.delete(`${process.env.REACT_APP_API_URL}/api/v1/classroom/${id}`)
     .then((response) => {
       console.log(`Response: ${response}`);
       console.log(`Status code: ${response.status}`);
@@ -121,11 +125,15 @@ async function getSuggestion(id) {
   return response.data.data;
 }
 
+// Test các hàm
 // testGetClass();
-// testGetClassList();
 // testAddClass();
 // testRenewClass();
 // testRemoveClass();
+// (async () => {
+//   const classes = await getClassList();
+//   console.log(classes);
+// })();
 
 export {
   getClass,

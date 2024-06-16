@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://8467-58-187-77-68.ngrok-free.app/api/v1/";
+const BASE_URL = "https://760f-2402-800-6d3e-a0b4-103e-7312-48c5-3428.ngrok-free.app/api/v1";
 
 var token = JSON.parse(localStorage.getItem("token"));
 if (token)
