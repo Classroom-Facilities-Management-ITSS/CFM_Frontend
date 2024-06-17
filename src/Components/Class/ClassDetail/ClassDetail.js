@@ -179,9 +179,12 @@ const ClassDetail = () => {
   };
   const addDeviceSuccess = () => {
     messageApi.success("Successfully add devices!");
-  }
+  };
   const addDeviceFail = () => {
     messageApi.error("Fail to add devices!");
+  };
+  const deviceLimitExceed = () => {
+    message.error("Facility limit exceed");
   }
 
   const [classData, setClassData] = useState(null);
@@ -212,7 +215,7 @@ const ClassDetail = () => {
       setChangeOption(options);
     }
     getClassData(params.classID);
-  }, []);
+  }, [params]);
 
   const devicesColumns = [
     {
@@ -358,9 +361,16 @@ const ClassDetail = () => {
     setDeviceOptions(options);
   };
   const onFinishAdd = (values) => {
+    let skip = false
+
     try {
       values.devices.map((id) => {
         let data = newDevices.filter((elem) => elem.id == id)[0];
+        if (values.count > data.count) {
+          skip = true;
+          deviceLimitExceed();
+        }
+
         let reqData = {
           id: data.id,
           name: data.name,
@@ -375,7 +385,6 @@ const ClassDetail = () => {
       });
 
       addDeviceSuccess();
-      nav(`/detail/classroom/${classData.id}`);
     } catch (error) {
       addDeviceFail();
     }
@@ -641,7 +650,7 @@ const ClassDetail = () => {
                 onCancel={handleCancelAdd}
                 footer={null}
               >
-                <Form name="addNewDevice" onFinish={{ onFinishAdd }}>
+                <Form name="addNewDevice" onFinish={onFinishAdd}>
                   <Form.Item
                     style={{ marginTop: 25 }}
                     name="devices"
@@ -657,6 +666,13 @@ const ClassDetail = () => {
                       placeholder="Devices"
                       options={deviceOptions}
                     ></Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    name="count"
+                    //label={<div class="font-bold text-xl">Number:</div>}
+                  >
+                    <Input placeholder="Number of facility"></Input>
                   </Form.Item>
 
                   <Form.Item>

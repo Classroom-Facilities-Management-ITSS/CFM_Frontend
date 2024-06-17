@@ -65,7 +65,7 @@ const DeviceDetail = () => {
       setOthersDevice(others);
     }
     getData();
-  }, []);
+  }, [params]);
 
   const [location, setLocation] = useState(null);
 
@@ -86,7 +86,7 @@ const DeviceDetail = () => {
       setLocation(options);
     }
     getLocation();
-  }, []);
+  }, [params]);
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 

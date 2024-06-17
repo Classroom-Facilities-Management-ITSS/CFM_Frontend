@@ -90,7 +90,8 @@ const UserList = () => {
       render: (_, record) => (
         <a
           onClick={() => {
-            handleDelete(record.id);
+            handleDelete(record.accountID);
+            //console.log(record.accountID)
           }}
         >
           Delete
@@ -131,7 +132,7 @@ const UserList = () => {
     removeAcc(id).then((res) => {
       if (res.status >= 200 && res.status < 300) {
         deleteFinish();
-        nav("/classList");
+        nav("/accountList");
       } else {
         deleteFail();
       }

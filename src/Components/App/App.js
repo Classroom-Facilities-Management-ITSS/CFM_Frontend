@@ -313,11 +313,6 @@ const App = () => {
     },
     {
       key: "3",
-      label: <div onClick={forgotPassword}>Forgot password</div>,
-      icon: <SolutionOutlined />,
-    },
-    {
-      key: "4",
       label: (
         <a href="/" onClick={handleLogout}>
           Log out
@@ -559,7 +554,7 @@ const App = () => {
                         <Checkbox>Remember me</Checkbox>
                       </Form.Item>
 
-                      <Button className="login-form-forgot">
+                      <Button className="login-form-forgot" onClick={forgotPassword}>
                         Forgot password
                       </Button>
                     </Form.Item>
