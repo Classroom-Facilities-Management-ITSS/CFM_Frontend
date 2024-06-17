@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
   Flex,
@@ -21,11 +21,13 @@ import Capitalize from "../hook/capitalize";
 import {
   getFacility,
   getFacilityByClassAddress,
+  removeFacility,
   renewFacility,
 } from "../../Constant/Facility";
 import { getClassList } from "../../Constant/Classrooms";
 
 const DeviceDetail = () => {
+  const nav = useNavigate();
   const params = useParams();
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -40,6 +42,12 @@ const DeviceDetail = () => {
   };
   const noChange = () => {
     messageApi.error("Nothing change, undo your request!");
+  };
+  const deleteSuccess = () => {
+    messageApi.success("Delete class successfully!");
+  };
+  const deleteFail = () => {
+    messageApi.error("Can't delete this class at this time!");
   };
 
   const [deviceData, setDeviceData] = useState(null);
@@ -120,6 +128,16 @@ const DeviceDetail = () => {
   }
   function handleCancel() {
     setEditMode(false);
+  }
+  function handleDelete() {
+    removeFacility(deviceData.id).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        deleteSuccess();
+        nav(`/classList`);
+      } else {
+        deleteFail();
+      }
+    });
   }
   function onFinishEdit(values) {
     let isChange = false;
@@ -232,7 +250,7 @@ const DeviceDetail = () => {
                         ></Select>
                       ) : (
                         <span class="text-xl">
-                          {Capitalize(deviceData.status)}
+                          {deviceData.status}
                         </span>
                       )}
                     </Form.Item>
@@ -319,8 +337,18 @@ const DeviceDetail = () => {
                     <Button type="primary" htmlType="submit">
                       Submit
                     </Button>
+
                     <Button type="" htmlType="submit" onClick={handleCancel}>
                       Cancel
+                    </Button>
+
+                    <Button
+                      type=""
+                      danger
+                      htmlType="submit"
+                      onClick={handleDelete}
+                    >
+                      Delete
                     </Button>
                   </Space>
                 </Flex>

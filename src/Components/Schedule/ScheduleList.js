@@ -4,23 +4,81 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { Table, Space, Button } from "antd";
+import {
+  Form,
+  Modal,
+  Input,
+  Table,
+  Space,
+  Select,
+  Button,
+  message,
+} from "antd";
 import { EditOutlined, DownloadOutlined } from "@ant-design/icons";
 
-import { getScheduleByEmail, getScheduleList } from "../../Constant/Schedule";
+import {
+  getScheduleByEmail,
+  getScheduleList,
+  removeSchedule,
+  renewSchedule,
+} from "../../Constant/Schedule";
+import { getClassList } from "../../Constant/Classrooms";
 
 const ScheduleList = () => {
+  const nav = useNavigate();
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = () => {
+    messageApi.open({
+      type: "success",
+      content: "Edit finish!",
+    });
+  };
+  const apiError = () => {
+    messageApi.open({
+      type: "error",
+      content: "Edit Fail, please try again!",
+    });
+  };
+  const deleteFinish = () => {
+    messageApi.open({
+      type: "success",
+      content: "Done!",
+    });
+  };
+  const deleteFail = () => {
+    messageApi.open({
+      type: "error",
+      content: "Error occur!",
+    });
+  };
+
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [schedule, setSchedule] = useState(null);
+  const [classes, setClasses] = useState(null);
 
   useEffect(() => {
     async function getSchedule() {
       let list = [];
+      let options = [];
+      let classList = [];
 
       if (user.account.role == "ADMIN") {
         list = await getScheduleList();
+        classList = await getClassList();
+
+        classList.map((elem) => {
+          let option = {
+            value: elem.id,
+            label: elem.address,
+          };
+
+          options.push(option);
+        });
+
+        setClasses(options);
       } else {
         list = await getScheduleByEmail(user.account.email);
       }
@@ -94,15 +152,174 @@ const ScheduleList = () => {
       dataIndex: "countStudent",
       key: "countStudent",
     },
-    {
-      title: "Note",
-      dataIndex: "note",
-      key: "note",
-    },
+    user.account.role == "ADMIN"
+      ? {
+          title: "Action",
+          key: "action",
+          render: (_, record) => (
+            <Space size="middle">
+              <a
+                onClick={() => {
+                  onEdit(record.id);
+                }}
+              >
+                Edit
+              </a>
+              <a
+                onClick={() => {
+                  handleDelete(record.id);
+                }}
+              >
+                Delete
+              </a>
+            </Space>
+          ),
+        }
+      : {
+          title: "Note",
+          dataIndex: "note",
+          key: "note",
+        },
   ];
+
+  function handleDelete(id) {
+    removeSchedule(id).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        deleteFinish();
+        nav("/schedule");
+      } else {
+        deleteFail();
+      }
+    });
+  }
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [scheduleOnEdit, setScheduleOnEdit] = useState(false);
+  function onEdit(id) {
+    setScheduleOnEdit(schedule.filter((elem) => elem.id == id)[0]);
+    setIsEdit(true);
+  }
+  function handleCancel() {
+    setIsEdit(false);
+  }
+  function onFinishEdit(values) {
+    let newScheduleInfo = {
+      id: scheduleOnEdit.id,
+      subject: values.subject,
+      classroomId: values.address,      
+      countStudent: values.countStudent,
+      startTime: values.startTime,
+      endTime: values.endTime,
+    };
+
+    renewSchedule(newScheduleInfo).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        success();
+        setIsEdit(false);
+      } else {
+        apiError();
+      }
+    });
+  }
 
   return (
     <Space direction="vertical" size={50}>
+      <Modal
+        title="Edit Schedule"
+        open={isEdit}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form name="editSchedule" onFinish={onFinishEdit}>
+          <Form.Item
+            style={{ marginTop: 25 }}
+            name="subject"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Input
+              //prefix={<UserOutlined className="site-form-item-icon" />}
+              placeholder="subject"
+            />
+          </Form.Item>
+
+          <Form.Item
+            style={{ marginTop: 25 }}
+            name="address"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Select placeholder="Address" options={classes}></Select>
+          </Form.Item>
+
+          <Form.Item
+            name="countStudent"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Input
+              //prefix={<LockOutlined className="site-form-item-icon" />}
+              //type="password"
+              placeholder="Number of students"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="startTime"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Input
+              //prefix={<LockOutlined className="site-form-item-icon" />}
+              //type="password"
+              placeholder="startTime"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="endTime"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Input
+              //prefix={<LockOutlined className="site-form-item-icon" />}
+              //type="password"
+              placeholder="endTime"
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="new-user-form-button"
+            >
+              Confirm
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
       <Space id="header-container">
         <div class="text-2xl font-bold">Schedule Information</div>
 

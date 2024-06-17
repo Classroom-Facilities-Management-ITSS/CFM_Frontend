@@ -1,46 +1,16 @@
 import "./UserList.css";
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Space, Table, Button, Modal, Form, Input, message } from "antd";
-import {
-  EditOutlined,
-  UserOutlined,
-  LockOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
 
-import { addNewAcc, getAccList } from "../../../Constant/User";
-
-const userAttribute = [
-  {
-    title: "Name",
-    dataIndex: "fullName",
-    key: "fullName",
-    render: (text, record) => (
-      <Link to={`/account/${record.accountID}`}>{text}</Link>
-    ),
-  },
-  {
-    title: "Role",
-    key: "role",
-    render: (record) => <div>{record.account.role}</div>,
-  },
-  {
-    title: "Email",
-    key: "email",
-    render: (record) => <div>{record.account.email}</div>,
-  },
-  {
-    title: "Active status",
-    key: "active",
-    render: (record) => (
-      <div>{record.account.active ? "Actived" : "Unactive"}</div>
-    ),
-  },
-];
+import { addNewAcc, getAccList, removeAcc } from "../../../Constant/User";
 
 const UserList = () => {
+  const nav = useNavigate();
+
   const [messageApi, contextHolder] = message.useMessage();
   const success = () => {
     messageApi.open({
@@ -60,6 +30,18 @@ const UserList = () => {
       content: "API Error! Try to reconnect your API!",
     });
   };
+  const deleteFinish = () => {
+    messageApi.open({
+      type: "success",
+      content: "Done!",
+    });
+  };
+  const deleteFail = () => {
+    messageApi.open({
+      type: "error",
+      content: "Error occur!",
+    });
+  };
 
   const [userList, setUserList] = useState(null);
 
@@ -75,6 +57,47 @@ const UserList = () => {
       console.log(error);
     }
   }, []);
+
+  const userAttribute = [
+    {
+      title: "Name",
+      dataIndex: "fullName",
+      key: "fullName",
+      render: (text, record) => (
+        <Link to={`/account/${record.accountID}`}>{text}</Link>
+      ),
+    },
+    {
+      title: "Role",
+      key: "role",
+      render: (record) => <div>{record.account.role}</div>,
+    },
+    {
+      title: "Email",
+      key: "email",
+      render: (record) => <div>{record.account.email}</div>,
+    },
+    {
+      title: "Active status",
+      key: "active",
+      render: (record) => (
+        <div>{record.account.active ? "Actived" : "Unactive"}</div>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <a
+          onClick={() => {
+            handleDelete(record.id);
+          }}
+        >
+          Delete
+        </a>
+      ),
+    },
+  ];
 
   const [isAddUser, setIsAddUser] = useState(false);
   const showAddUserModal = () => {
@@ -95,11 +118,22 @@ const UserList = () => {
     };
 
     addNewAcc(newAccount).then((res) => {
-      if (res.status == 200) {
+      if (res.status >= 200 && res.status < 300) {
         success();
         setIsAddUser(false);
       } else {
         apiError();
+      }
+    });
+  };
+
+  const handleDelete = (id) => {
+    removeAcc(id).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        deleteFinish();
+        nav("/classList");
+      } else {
+        deleteFail();
       }
     });
   };

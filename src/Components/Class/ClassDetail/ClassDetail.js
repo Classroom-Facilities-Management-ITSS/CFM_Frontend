@@ -18,10 +18,13 @@ import {
   Select,
   Button,
   message,
-  Dropdown,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { EditOutlined, DownloadOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DownloadOutlined,
+  AppstoreAddOutlined,
+} from "@ant-design/icons";
 
 import Capitalize from "../../hook/capitalize";
 
@@ -33,22 +36,20 @@ import {
   renewClass,
 } from "../../../Constant/Classrooms";
 import { addNewReport } from "../../../Constant/Report";
-import { getFacilityByClassAddress } from "../../../Constant/Facility";
+import {
+  getFacilityByClassAddress,
+  getFacilityInStorage,
+  renewFacility,
+} from "../../../Constant/Facility";
 
 const AddReport = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
   const success = () => {
     messageApi.success("Finish editing, your report is submited!");
   };
-  const deleteSuccess = () => {
-    messageApi.success("Delete class successfully!");
-  };
   const error = () => {
     messageApi.error("Network error!");
   };
-  const deleteFail = () => {
-    messageApi.error("Can't delete this class at this time!");
-  }
 
   const deviceOptions = props.devices
     ? props.devices.map((device) => ({
@@ -86,8 +87,18 @@ const AddReport = (props) => {
   return (
     <>
       {contextHolder}
-      <Button style={{ border: "none" }} onClick={showAddReportModal}>
-        <EditOutlined style={{ fontSize: 20 }} />
+      <Button
+        type="default"
+        icon={<AppstoreAddOutlined />}
+        onClick={showAddReportModal}
+        style={{
+          borderRadius: "5px",
+          fontWeight: "bold",
+          backgroundColor: "#f0f0f0",
+          color: "#000",
+        }}
+      >
+        Write report!
       </Button>
 
       <div>
@@ -145,7 +156,7 @@ const ClassDetail = () => {
   };
   const changeSuccess = () => {
     messageApi.success("This class status has been switch to fixing!");
-  }
+  };
   const forbidden = () => {
     messageApi.error("Only admin can edit classroom information!");
   };
@@ -156,7 +167,21 @@ const ClassDetail = () => {
     messageApi.error("Nothing change, undo your request!");
   };
   const changeFail = () => {
-    messageApi.error("Can't switch this class's status to fixing at this moment!");
+    messageApi.error(
+      "Can't switch this class's status to fixing at this moment!"
+    );
+  };
+  const deleteSuccess = () => {
+    messageApi.success("Delete class successfully!");
+  };
+  const deleteFail = () => {
+    messageApi.error("Can't delete this class at this time!");
+  };
+  const addDeviceSuccess = () => {
+    messageApi.success("Successfully add devices!");
+  }
+  const addDeviceFail = () => {
+    messageApi.error("Fail to add devices!");
   }
 
   const [classData, setClassData] = useState(null);
@@ -236,9 +261,10 @@ const ClassDetail = () => {
   function handleDelete() {
     removeClass(classData.id).then((res) => {
       if (res.status >= 200 && res.status < 300) {
+        deleteSuccess();
         nav("/classList");
       } else {
-
+        deleteFail();
       }
     });
   }
@@ -305,6 +331,53 @@ const ClassDetail = () => {
       });
     } else {
       noChange();
+    }
+  };
+
+  const [addDevice, setAddDevice] = useState(false);
+  const [newDevices, setNewDevices] = useState(null);
+  const [deviceOptions, setDeviceOptions] = useState(null);
+  const handleCancelAdd = () => {
+    setAddDevice(false);
+  };
+  const onAddDevice = async () => {
+    setAddDevice(true);
+
+    let data = await getFacilityInStorage();
+    setNewDevices(data);
+
+    let options = [];
+    data.map((elem) => {
+      let option = {
+        label: elem.name,
+        value: elem.id,
+      };
+
+      options.push(option);
+    });
+    setDeviceOptions(options);
+  };
+  const onFinishAdd = (values) => {
+    try {
+      values.devices.map((id) => {
+        let data = newDevices.filter((elem) => elem.id == id)[0];
+        let reqData = {
+          id: data.id,
+          name: data.name,
+          count: data.count,
+          status: data.status,
+          version: data.version,
+          classroomId: classData.id,
+          note: data.note,
+        };
+
+        renewFacility(reqData);
+      });
+
+      addDeviceSuccess();
+      nav(`/detail/classroom/${classData.id}`);
+    } catch (error) {
+      addDeviceFail();
     }
   };
 
@@ -535,7 +608,12 @@ const ClassDetail = () => {
                         Cancel
                       </Button>
 
-                      <Button type="" danger htmlType="submit" onClick={handleDelete}>
+                      <Button
+                        type=""
+                        danger
+                        htmlType="submit"
+                        onClick={handleDelete}
+                      >
                         Delete
                       </Button>
                     </Space>
@@ -552,6 +630,46 @@ const ClassDetail = () => {
           <Space direction="vertical" size={25}>
             <Space direction="horizontal">
               <div class="text-2xl font-bold">Devices list</div>
+
+              <Button style={{ border: "none" }} onClick={onAddDevice}>
+                <EditOutlined style={{ fontSize: 20 }} />
+              </Button>
+
+              <Modal
+                title="Add Device"
+                open={addDevice}
+                onCancel={handleCancelAdd}
+                footer={null}
+              >
+                <Form name="addNewDevice" onFinish={{ onFinishAdd }}>
+                  <Form.Item
+                    style={{ marginTop: 25 }}
+                    name="devices"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please select atleast one device!",
+                      },
+                    ]}
+                  >
+                    <Select
+                      mode="multiple"
+                      placeholder="Devices"
+                      options={deviceOptions}
+                    ></Select>
+                  </Form.Item>
+
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      className="new-user-form-button"
+                    >
+                      Confirm
+                    </Button>
+                  </Form.Item>
+                </Form>
+              </Modal>
 
               <AddReport
                 user={user}

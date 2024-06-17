@@ -130,6 +130,30 @@ async function removeFacility(id) {
   return res;
 }
 
+async function getFacilityInStorage() {
+  let page = 1;
+  let limit = 10;
+  let listData = [];
+  let hasMore = true;
+
+  while (hasMore) {
+    let response = await Http.get(`/api/v1/facility/storage`, {
+      params: { page, limit },
+    });
+    let data = response.data.data;
+
+    if (data.length == limit) {
+      page += 1;
+      listData.push(...data);
+    } else {
+      hasMore = false;
+      listData.push(...data);
+    }
+  }
+
+  return listData;
+}
+
 export {
   getFacility,
   getFacilityList,
@@ -137,4 +161,5 @@ export {
   addNewFacility,
   renewFacility,
   removeFacility,
+  getFacilityInStorage
 };
