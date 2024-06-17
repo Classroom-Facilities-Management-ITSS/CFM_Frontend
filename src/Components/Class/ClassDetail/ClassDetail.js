@@ -53,9 +53,9 @@ const AddReport = (props) => {
 
   const deviceOptions = props.devices
     ? props.devices.map((device) => ({
-        label: device.name,
-        value: device.id,
-      }))
+      label: device.name,
+      value: device.id,
+    }))
     : [];
 
   const [isAddReport, setIsAddReport] = useState(false);
@@ -344,6 +344,11 @@ const ClassDetail = () => {
     setAddDevice(false);
   };
   const onAddDevice = async () => {
+    if (user.account.role == "USER") {
+      forbidden();
+      return;
+    }
+
     setAddDevice(true);
 
     let data = await getFacilityInStorage();
@@ -468,7 +473,7 @@ const ClassDetail = () => {
               onFinish={onFinishEdit}
               autoComplete="off"
             >
-              <Space size={100}>
+              <Space size={50}>
                 <Space direction="vertical" size={50}>
                   <Space>
                     <div class="text-2xl font-bold">
@@ -592,7 +597,7 @@ const ClassDetail = () => {
                   </Space>
                 </Space>
 
-                <div class="ml-10">
+                <div class="">
                   <Image
                     src={require("../../../assets/classroom.png")}
                     width={200}
@@ -670,7 +675,7 @@ const ClassDetail = () => {
 
                   <Form.Item
                     name="count"
-                    //label={<div class="font-bold text-xl">Number:</div>}
+                  //label={<div class="font-bold text-xl">Number:</div>}
                   >
                     <Input placeholder="Number of facility"></Input>
                   </Form.Item>

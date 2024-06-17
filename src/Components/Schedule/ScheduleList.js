@@ -16,7 +16,7 @@ import {
   Button,
   message,
 } from "antd";
-import { EditOutlined, DownloadOutlined } from "@ant-design/icons";
+import { EditOutlined, DownloadOutlined, FilterOutlined } from "@ant-design/icons";
 
 import {
   getScheduleByEmail,
@@ -56,6 +56,7 @@ const ScheduleList = () => {
   };
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [filterSchedule, setFilterSchedule] = useState([]);  
   const [schedule, setSchedule] = useState(null);
   const [classes, setClasses] = useState(null);
 
@@ -94,6 +95,7 @@ const ScheduleList = () => {
           classId: elem.classroom.id,
           address: elem.classroom.address,
           countStudent: elem.countStudent,
+          lecturer: elem.account.user.fullName,
         };
 
         classes = [...classes, room];
@@ -154,33 +156,58 @@ const ScheduleList = () => {
     },
     user.account.role == "ADMIN"
       ? {
-          title: "Action",
-          key: "action",
-          render: (_, record) => (
-            <Space size="middle">
-              <a
-                onClick={() => {
-                  onEdit(record.id);
-                }}
-              >
-                Edit
-              </a>
-              <a
-                onClick={() => {
-                  handleDelete(record.id);
-                }}
-              >
-                Delete
-              </a>
-            </Space>
-          ),
-        }
+        title: "Lecturer",
+        key: "lecturer",
+        render: (_, record) => (
+          <div>{record.lecturer}</div>
+        ),
+      }
       : {
-          title: "Note",
-          dataIndex: "note",
-          key: "note",
-        },
+        title: "Note",
+        dataIndex: "note",
+        key: "note",
+      },
   ];
+  if (user.account.role == "ADMIN") {
+    listAttribute.push(
+      {
+        title: "Action",
+        key: "action",
+        render: (_, record) => (
+          <Space size="middle">
+            <a
+              onClick={() => {
+                //console.log(record.id)
+                onEdit(record.id);
+              }}
+            >
+              Edit
+            </a>
+            <a
+              onClick={() => {
+                handleDelete(record.id);
+              }}
+            >
+              Delete
+            </a>
+          </Space>
+        ),
+      }
+    )
+  }
+
+  const [isFilter, setIsFilter] = useState(false)
+  function onFilter() {
+    setIsFilter(true);
+  }
+  function onFinishFilter(values) {
+    let isFilter = false;
+
+    if (values.subject) {
+      isFilter = true;
+
+    }
+  }
 
   function handleDelete(id) {
     removeSchedule(id).then((res) => {
@@ -201,12 +228,13 @@ const ScheduleList = () => {
   }
   function handleCancel() {
     setIsEdit(false);
+    setIsFilter(false);
   }
   function onFinishEdit(values) {
     let newScheduleInfo = {
       id: scheduleOnEdit.id,
       subject: values.subject,
-      classroomId: values.address,      
+      classroomId: values.address,
       countStudent: values.countStudent,
       startTime: values.startTime,
       endTime: values.endTime,
@@ -225,6 +253,62 @@ const ScheduleList = () => {
   return (
     <Space direction="vertical" size={50}>
       <Modal
+        title="Filtering Schedule"
+        open={isFilter}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form name="filteringSchedule" onFinish={onFinishFilter}>
+          <Form.Item name="address" style={{ marginTop: 25 }}>
+            <Input placeholder="Address" />
+          </Form.Item>
+
+          <Form.Item
+            name="time"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="Time" />
+          </Form.Item>
+
+          <Form.Item
+            name="subject"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="Subject" />
+          </Form.Item>
+
+          <Form.Item
+            name="lecturer"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="Lecturer" />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="new-user-form-button"
+            >
+              Confirm
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
         title="Edit Schedule"
         open={isEdit}
         onCancel={handleCancel}
@@ -242,8 +326,7 @@ const ScheduleList = () => {
             ]}
           >
             <Input
-              //prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="subject"
+              placeholder={scheduleOnEdit.subject}
             />
           </Form.Item>
 
@@ -257,7 +340,7 @@ const ScheduleList = () => {
               },
             ]}
           >
-            <Select placeholder="Address" options={classes}></Select>
+            <Select placeholder={scheduleOnEdit.address} options={classes}></Select>
           </Form.Item>
 
           <Form.Item
@@ -270,9 +353,7 @@ const ScheduleList = () => {
             ]}
           >
             <Input
-              //prefix={<LockOutlined className="site-form-item-icon" />}
-              //type="password"
-              placeholder="Number of students"
+              placeholder={scheduleOnEdit.countStudent}
             />
           </Form.Item>
 
@@ -286,9 +367,7 @@ const ScheduleList = () => {
             ]}
           >
             <Input
-              //prefix={<LockOutlined className="site-form-item-icon" />}
-              //type="password"
-              placeholder="startTime"
+              placeholder={scheduleOnEdit.startTime}
             />
           </Form.Item>
 
@@ -302,9 +381,7 @@ const ScheduleList = () => {
             ]}
           >
             <Input
-              //prefix={<LockOutlined className="site-form-item-icon" />}
-              //type="password"
-              placeholder="endTime"
+              placeholder={scheduleOnEdit.endTime}
             />
           </Form.Item>
 
@@ -322,6 +399,10 @@ const ScheduleList = () => {
 
       <Space id="header-container">
         <div class="text-2xl font-bold">Schedule Information</div>
+
+        <Button style={{ border: "none" }} onClick={onFilter}>
+          <FilterOutlined style={{ fontSize: 20 }} />
+        </Button>
 
         <Button style={{ border: "none" }}>
           <EditOutlined style={{ fontSize: 20 }} />

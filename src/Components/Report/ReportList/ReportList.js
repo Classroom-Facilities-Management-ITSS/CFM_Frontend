@@ -1,17 +1,14 @@
 import "./ReportList.css";
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 
 import { Space, Table, message, Button } from "antd";
 import { EditOutlined } from "@ant-design/icons";
-import { getReportList } from "../../../Constant/Report";
-
-//import usersData from "../../../Constant/initialData/user.json";
-//import reportData from "../../../Constant/initialData/report.json";
-//import classesData from "../../../Constant/initialData/classroom.json";
+import { getReportList, removeReport } from "../../../Constant/Report";
 
 const ReportList = () => {
+  const [onReload, setOnReload] = useState(0);
+
   const [messageApi, contextHolder] = message.useMessage();
   const accept = () => {
     messageApi.open({
@@ -25,19 +22,20 @@ const ReportList = () => {
       content: "Report has been declined!",
     });
   };
+  const apiError = () => {
+    messageApi.open({
+      type: "error",
+      content: "Something went wrong!",
+    });
+  };
+  const success = () => {
+    messageApi.open({
+      type: "success",
+      content: "This report has been checked and removed!",
+    });
+  };
 
-  /*
-  let reportList = [];
-  reportData.map((report) => {
-    let owner = usersData.filter((user) => user.accountID == report.userID)[0];
-    report.owner = owner.lastName;
-
-    let location = classesData.filter((room) => room.id == report.classID)[0];
-    report.location = location.address;
-
-    reportList.push(report);
-  });
-  */
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
   const [reportList, setReportList] = useState(null);
 
@@ -47,7 +45,7 @@ const ReportList = () => {
       setReportList(list);
     }
     getData();
-  }, [])
+  }, [onReload])
 
   const reportAttribute = [
     {
@@ -69,10 +67,13 @@ const ReportList = () => {
       title: "Action",
       key: "action",
       render: (record) => (
-        <Space size={48}>
-          <a onClick={() => onAccept(record, "accept")}>Accept</a>
-          <a onClick={() => onDecline(record, "decline")}>Decline</a>
-        </Space>
+        <> {user.account.role == "ADMIN" ?
+          <Space size={48}>
+            <a onClick={() => onAccept(record, "accept")}>Accept</a>
+            <a onClick={() => onDecline(record, "decline")}>Decline</a>
+          </Space> :
+          <a onClick={() => onAccept(record, "accept")}>Delete</a>}
+        </>
       ),
     },
   ];
@@ -82,8 +83,14 @@ const ReportList = () => {
     report.finish = 1;
     report.note += `\nThe admin has ${permission} this report!`;
 
-    accept();
-    //post api to update report.
+    removeReport(values.id).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        success();
+        setOnReload(onReload + 1);
+      } else {
+        apiError();
+      }
+    });
   };
 
   const onDecline = (values, permission) => {
@@ -91,8 +98,14 @@ const ReportList = () => {
     report.finish = 1;
     report.note += `\nThe admin has ${permission} this report!`;
 
-    decline();
-    //post api to update report.
+    removeReport(values.id).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        success();
+        setOnReload(onReload + 1);
+      } else {
+        apiError();
+      }
+    });
   };
 
   return (
