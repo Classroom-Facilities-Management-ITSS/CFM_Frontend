@@ -16,9 +16,8 @@ import { getScheduleByEmail } from "../../../Constant/Schedule";
 const UserDetail = () => {
   const params = useParams();
 
-  const [userData, setUserData] = useState(
-    JSON.parse(localStorage.getItem("user"))
-  );
+  const [admin, setAdmin] = useState(JSON.parse(localStorage.getItem("user")));
+  const [userData, setUserData] = useState(null);
   const [userSchedule, setUserSchedule] = useState(null);
 
   useEffect(() => {
@@ -26,7 +25,7 @@ const UserDetail = () => {
       let data = await getAcc(params.accountID);
       setUserData(data);
 
-      let schedule = await getScheduleByEmail(userData.account.email);
+      let schedule = await getScheduleByEmail(data.account.email);
       setUserSchedule(schedule);
     }
     getData();
@@ -46,11 +45,13 @@ const UserDetail = () => {
     messageApi.error("Nothing change, undo your request!");
   };
 
+  const [form] = Form.useForm();
   const [editMode, setEditMode] = useState(false);
   function handleEdit() {
     setEditMode(true);
   }
   function handleCancel() {
+    form.resetFields();
     setEditMode(false);
   }
   const onFinishEdit = (values) => {
@@ -60,7 +61,7 @@ const UserDetail = () => {
     if (values.name) {
       isChange = true;
       newUserInfo.firstName = values.name.split(" ")[0];
-      newUserInfo.lastName = values.name.split(" ")[1];
+      newUserInfo.lastName = values.name.split(" ").pop();
       newUserInfo.fullName = values.name;
     }
     if (values.dob) {
@@ -78,7 +79,7 @@ const UserDetail = () => {
           info();
           setEditMode(false);
 
-          if (userData.account.role == "USER") {
+          if (admin.account.role == "USER") {
             userData.department = newUserInfo.department;
             userData.firstName = newUserInfo.firstName;
             userData.lastName = newUserInfo.lastName;
@@ -101,7 +102,12 @@ const UserDetail = () => {
       {contextHolder}
       {userData ? (
         <Space direction="vertical" size={50}>
-          <Form colon={false} onFinish={onFinishEdit} autoComplete="off">
+          <Form
+            form={form}
+            colon={false}
+            onFinish={onFinishEdit}
+            autoComplete="off"
+          >
             <Space size={100}>
               <Space direction="vertical" size={50}>
                 <Space>
@@ -154,9 +160,7 @@ const UserDetail = () => {
                       {editMode ? (
                         <Input defaultValue={userData.account.email}></Input>
                       ) : (
-                        <span class="text-xl">
-                          {userData.account.email}
-                        </span>
+                        <span class="text-xl">{userData.account.email}</span>
                       )}
                     </Form.Item>
 

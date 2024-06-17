@@ -218,13 +218,56 @@ async function renewProfile(data) {
       }
     )
     .then((response) => {
-      console.log(`Response: ${response}`);
-      console.log(`Status code: ${response.status}`);
       res = response;
     })
     .catch((err) => {
-      console.log(err);
-      res = 404;
+      res = err;
+    });
+
+  return res;
+}
+
+async function forgetPassword(data) {
+  let res;
+
+  await axios
+    .post(
+      `${process.env.REACT_APP_API_URL}/api/v1/auth/forgot_password`,
+      JSON.stringify(data),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    .then((response) => {
+      res = response;
+    })
+    .catch((err) => {
+      res = err;
+    });
+
+  return res;
+}
+
+async function updatePassword(data) {
+  let res;
+
+  await axios
+    .put(
+      `${process.env.REACT_APP_API_URL}/api/v1/auth/update_password`,
+      JSON.stringify(data),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    .then((response) => {
+      res = response;
+    })
+    .catch((err) => {
+      res = err;
     });
 
   return res;
@@ -239,4 +282,6 @@ export {
   removeAcc,
   getProfile,
   renewProfile,
+  forgetPassword,
+  updatePassword,
 };

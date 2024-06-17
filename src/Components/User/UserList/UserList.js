@@ -8,7 +8,6 @@ import {
   EditOutlined,
   UserOutlined,
   LockOutlined,
-  AuditOutlined,
 } from "@ant-design/icons";
 
 import { addNewAcc, getAccList } from "../../../Constant/User";
@@ -168,37 +167,6 @@ const UserList = () => {
                 prefix={<LockOutlined className="site-form-item-icon" />}
                 type="password"
                 placeholder="Confirm password"
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="firstName"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input user's first name!",
-                },
-              ]}
-            >
-              <Input
-                prefix={<AuditOutlined className="site-form-item-icon" />}
-                placeholder="First name"
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="lastName"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input user's last name!",
-                },
-              ]}
-            >
-              <Input
-                prefix={<AuditOutlined className="site-form-item-icon" />}
-                type="password"
-                placeholder="Last name"
               />
             </Form.Item>
 

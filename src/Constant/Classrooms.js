@@ -41,11 +41,15 @@ async function addNewClass(newClass) {
   let res;
 
   await axios
-    .post(`${process.env.REACT_APP_API_URL}/api/v1/classroom`, newClass, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    .post(
+      `${process.env.REACT_APP_API_URL}/api/v1/classroom`,
+      JSON.stringify(newClass),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
     .then((response) => {
       console.log(`Response: ${response}`);
       console.log(`Status code: ${response.status}`);

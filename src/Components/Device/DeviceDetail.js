@@ -9,31 +9,37 @@ import {
   Image,
   Empty,
   Table,
+  Select,
   Button,
   message,
 } from "antd";
-import { EditOutlined, FormOutlined } from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 
 import Capitalize from "../hook/capitalize";
 
-//import devicesData from "../../Constant/initialData/device.json";
-//import classesData from "../../Constant/initialData/classroom.json";
-
 import {
   getFacility,
   getFacilityByClassAddress,
+  renewFacility,
 } from "../../Constant/Facility";
+import { getClassList } from "../../Constant/Classrooms";
 
 const DeviceDetail = () => {
   const params = useParams();
 
   const [messageApi, contextHolder] = message.useMessage();
-  const info = () => {
-    messageApi.info("Done! Wait for admin to check.");
-  };
   const error = () => {
     messageApi.info("Only admin can edit this section!");
+  };
+  const success = () => {
+    messageApi.success("Finish editing, device is up to date!");
+  };
+  const apiError = () => {
+    messageApi.error("Network error! Please reconnect your wifi!");
+  };
+  const noChange = () => {
+    messageApi.error("Nothing change, undo your request!");
   };
 
   const [deviceData, setDeviceData] = useState(null);
@@ -49,23 +55,32 @@ const DeviceDetail = () => {
       );
       let others = deviceList.filter((elem) => elem.id != device.id);
       setOthersDevice(others);
-    };
+    }
     getData();
   }, []);
 
-  /*
-  const deviceData = devicesData.filter(
-    (device) => device.id == params.deviceID
-  )[0];
-  const othersDevice = devicesData.filter(
-    (device) => device.classID == params.classID && device.id != deviceData.id
-  );
-  const deviceLocaltion = classesData.filter(
-    (localtion) => localtion.id == params.classID
-  )[0];
-  */
+  const [location, setLocation] = useState(null);
 
-  const [user, setUser] = useState(localStorage.getItem("user"));
+  useEffect(() => {
+    async function getLocation() {
+      let options = [];
+
+      let address = await getClassList();
+      address.map((elem) => {
+        let option = {
+          value: elem.id,
+          label: elem.address,
+        };
+
+        options.push(option);
+      });
+
+      setLocation(options);
+    }
+    getLocation();
+  }, []);
+
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
   const devicesColumns = [
     {
@@ -106,17 +121,66 @@ const DeviceDetail = () => {
   function handleCancel() {
     setEditMode(false);
   }
+  function onFinishEdit(values) {
+    let isChange = false;
+    let newDeviceInfo = deviceData;
+
+    if (values.name) {
+      isChange = true;
+      newDeviceInfo.name = values.name;
+    }
+    if (values.version) {
+      isChange = true;
+      newDeviceInfo.version = values.version;
+    }
+    if (values.status != deviceData.status) {
+      isChange = true;
+      newDeviceInfo.status = values.status;
+    }
+    if (values.location) {
+      isChange = true;
+      newDeviceInfo.classroomId = values.location;
+    }
+    if (values.note) {
+      isChange = true;
+      newDeviceInfo.note = values.note;
+    }
+
+    let updateData = {
+      id: newDeviceInfo.id,
+      name: newDeviceInfo.name,
+      count: newDeviceInfo.count,
+      status: newDeviceInfo.status,
+      version: newDeviceInfo.version,
+      classroomId: newDeviceInfo.classroomId,
+      note: newDeviceInfo.note,
+    };
+
+    if (isChange) {
+      renewFacility(updateData).then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          success();
+          setEditMode(false);
+        } else {
+          apiError();
+        }
+      });
+    } else {
+      noChange();
+    }
+  }
 
   return (
     <div class="m-10">
       {contextHolder}
       {deviceData ? (
         <Space direction="vertical" size={50}>
-          <Form colon={false} onFinish={info} autoComplete="off">
+          <Form colon={false} onFinish={onFinishEdit} autoComplete="off">
             <Space size={100}>
               <Space direction="vertical" size={50}>
                 <Space>
                   <div class="text-2xl font-bold">Device's information</div>
+
                   <Button style={{ border: "none" }} onClick={handleEdit}>
                     <EditOutlined style={{ fontSize: 20 }} />
                   </Button>
@@ -137,16 +201,54 @@ const DeviceDetail = () => {
                     </Form.Item>
 
                     <Form.Item
-                      name="lastUsed"
+                      name="status"
                       label={<div class="font-bold text-xl">Status:</div>}
                     >
                       {editMode ? (
-                        <Input
-                          defaultValue={Capitalize(deviceData.status)}
-                        ></Input>
+                        <Select
+                          placeholder="status"
+                          options={[
+                            {
+                              value: "NEW",
+                              label: "NEW",
+                            },
+                            {
+                              value: "OLD",
+                              label: "OLD",
+                            },
+                            {
+                              value: "FIXING",
+                              label: "FIXING",
+                            },
+                            {
+                              value: "USING",
+                              label: "USING",
+                            },
+                            {
+                              value: "NOTFOUND",
+                              label: "NOTFOUND",
+                            },
+                          ]}
+                        ></Select>
                       ) : (
                         <span class="text-xl">
                           {Capitalize(deviceData.status)}
+                        </span>
+                      )}
+                    </Form.Item>
+
+                    <Form.Item
+                      name="location"
+                      label={<div class="font-bold text-xl">Location:</div>}
+                    >
+                      {editMode ? (
+                        <Select
+                          placeholder="location"
+                          options={location}
+                        ></Select>
+                      ) : (
+                        <span class="text-xl">
+                          {Capitalize(deviceData.classroom.address)}
                         </span>
                       )}
                     </Form.Item>
@@ -154,7 +256,7 @@ const DeviceDetail = () => {
 
                   <Space direction="vertical">
                     <Form.Item
-                      name="status"
+                      name="version"
                       label={<div class="font-bold text-xl">Version:</div>}
                     >
                       {editMode ? (

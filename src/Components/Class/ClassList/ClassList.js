@@ -12,8 +12,9 @@ import {
   Button,
   Select,
   message,
+  Flex,
 } from "antd";
-import { EditOutlined, BankOutlined } from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 
 import { getScheduleByEmail } from "../../../Constant/Schedule";
 import { addNewClass, getClassList } from "../../../Constant/Classrooms";
@@ -32,7 +33,7 @@ const ClassTable = (props) => {
     } else {
       let classes = [];
 
-      props.schedule.sort((a,b) => a.startTime - b.startTime);
+      props.schedule.sort((a, b) => a.startTime - b.startTime);
       props.schedule.map((elem) => {
         let room = {
           id: elem.classroomId,
@@ -40,9 +41,9 @@ const ClassTable = (props) => {
           subject: elem.subject,
           note: elem.classroom.note,
           status: elem.classroom.status,
+          countStudent: elem.countStudent,
           address: elem.classroom.address,
           lastUsed: elem.classroom.lastUsed,
-          facilityAmount: elem.classroom.facilityAmount,
         };
 
         classes = [...classes, room];
@@ -81,13 +82,19 @@ const ClassTable = (props) => {
               <div>{text.split("T")[0]}</div>
               <div>{text.split("T")[1]}</div>
             </>
-          )
+          ),
         },
-    {
-      title: "Num of devices",
-      dataIndex: "facilityAmount",
-      key: "facilityAmount",
-    },
+    props.list
+      ? {
+          title: "Num of devices",
+          dataIndex: "facilityAmount",
+          key: "facilityAmount",
+        }
+      : {
+          title: "Subject",
+          dataIndex: "subject",
+          key: "subject",
+        },
     {
       title: "Note",
       dataIndex: "note",
@@ -154,15 +161,15 @@ const ClassList = () => {
 
     let newClass = {
       address: values.address,
-      status: values.status,
-      lastUsed: now,
-      maxSize: 0,
+      maxSize: values.maxSize,
+      status: values.status,      
+      lastUsed: now,      
       note: "",
     };
 
     setIsAddClass(false);
     addNewClass(newClass).then((res) => {
-      if (res.status == 200) {
+      if (res.status >= 200 && res.status < 300) {
         success();
       } else {
         apiError();
@@ -199,7 +206,7 @@ const ClassList = () => {
               ]}
             >
               <Input
-                prefix={<BankOutlined className="site-form-item-icon" />}
+                //prefix={<BankOutlined className="site-form-item-icon" />}
                 placeholder="Address"
               />
             </Form.Item>
@@ -232,6 +239,22 @@ const ClassList = () => {
               ></Select>
             </Form.Item>
 
+            <Form.Item
+              style={{ marginTop: 25 }}
+              name="maxSize"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input class's size!",
+                },
+              ]}
+            >
+              <Input
+                //prefix={<BankOutlined className="site-form-item-icon" />}
+                placeholder="Max size: (ex: 100)"
+              />
+            </Form.Item>
+
             <Form.Item>
               <Button
                 type="primary"
@@ -247,7 +270,7 @@ const ClassList = () => {
         {schedule ? (
           <>
             {user.account.role == "ADMIN" ? (
-              <ClassTable></ClassTable>
+              <ClassTable list={true}></ClassTable>
             ) : (
               <ClassTable schedule={schedule} list={true}></ClassTable>
             )}

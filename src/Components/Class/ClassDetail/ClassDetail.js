@@ -4,7 +4,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
   Form,
@@ -29,6 +29,7 @@ import {
   changeClassroom,
   getClass,
   getSuggestion,
+  removeClass,
   renewClass,
 } from "../../../Constant/Classrooms";
 import { addNewReport } from "../../../Constant/Report";
@@ -39,9 +40,15 @@ const AddReport = (props) => {
   const success = () => {
     messageApi.success("Finish editing, your report is submited!");
   };
+  const deleteSuccess = () => {
+    messageApi.success("Delete class successfully!");
+  };
   const error = () => {
     messageApi.error("Network error!");
   };
+  const deleteFail = () => {
+    messageApi.error("Can't delete this class at this time!");
+  }
 
   const deviceOptions = props.devices
     ? props.devices.map((device) => ({
@@ -129,12 +136,16 @@ const AddReport = (props) => {
 };
 
 const ClassDetail = () => {
+  const nav = useNavigate();
   const params = useParams();
 
   const [messageApi, contextHolder] = message.useMessage();
   const success = () => {
     messageApi.success("Finish editing, your class is up to date!");
   };
+  const changeSuccess = () => {
+    messageApi.success("This class status has been switch to fixing!");
+  }
   const forbidden = () => {
     messageApi.error("Only admin can edit classroom information!");
   };
@@ -144,6 +155,9 @@ const ClassDetail = () => {
   const noChange = () => {
     messageApi.error("Nothing change, undo your request!");
   };
+  const changeFail = () => {
+    messageApi.error("Can't switch this class's status to fixing at this moment!");
+  }
 
   const [classData, setClassData] = useState(null);
   const [changeInfo, setChangeInfo] = useState(null);
@@ -219,6 +233,15 @@ const ClassDetail = () => {
     setEditMode(false);
     setSwitchRoom(false);
   }
+  function handleDelete() {
+    removeClass(classData.id).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        nav("/classList");
+      } else {
+
+      }
+    });
+  }
 
   const [switchRoom, setSwitchRoom] = useState(false);
   const onChangeToFix = (e) => {
@@ -257,8 +280,6 @@ const ClassDetail = () => {
     }
 
     if (changeClassId) {
-      let errOccur = false;
-
       let changeData = {
         changeClassId: changeClassId,
         currentClassId: classData.id,
@@ -266,11 +287,9 @@ const ClassDetail = () => {
 
       changeClassroom(changeData).then((res) => {
         if (res.status >= 200 && res.status < 300) {
-          //success();
-          //setEditMode(false);
+          changeSuccess();
         } else {
-          errOccur = true;
-          apiError();
+          changeFail();
         }
       });
     }
@@ -511,8 +530,13 @@ const ClassDetail = () => {
                       <Button type="primary" htmlType="submit">
                         Submit
                       </Button>
+
                       <Button type="" htmlType="submit" onClick={handleCancel}>
                         Cancel
+                      </Button>
+
+                      <Button type="" danger htmlType="submit" onClick={handleDelete}>
+                        Delete
                       </Button>
                     </Space>
                   </Flex>

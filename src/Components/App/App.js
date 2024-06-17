@@ -53,7 +53,7 @@ import ClassDetail from "../Class/ClassDetail/ClassDetail.js";
 import useWindowDimensions from "../hook/useWindowDimensions.js";
 
 import { AuthLogin } from "../../Constant/Http.js";
-import { getProfile } from "../../Constant/User.js";
+import { forgetPassword, getProfile, updatePassword } from "../../Constant/User.js";
 
 const { Header, Content, Sider } = Layout;
 
@@ -167,6 +167,18 @@ const App = () => {
       content: "Login successfully, welcomeback Captain!",
     });
   };
+  const changePassSuccess = () => {
+    messageApi.open({
+      type: "success",
+      content: "Change password successfully, welcomeback Captain!",
+    });
+  };
+  const resetPassSuccess = () => {
+    messageApi.open({
+      type: "success",
+      content: "Please check your email to reset password!",
+    });
+  };
   const error = () => {
     messageApi.open({
       type: "error",
@@ -177,6 +189,18 @@ const App = () => {
     messageApi.open({
       type: "error",
       content: "Confirm Password must be the same as new password!",
+    });
+  };
+  const changePassFailed = () => {
+    messageApi.open({
+      type: "error",
+      content: "Wrong old password, please try again!",
+    });
+  };
+  const resetPassFailed = () => {
+    messageApi.open({
+      type: "error",
+      content: "Network error!",
     });
   };
 
@@ -226,6 +250,18 @@ const App = () => {
   };
 
   const [isChangePassword, setIsChangePassword] = useState(false);
+  const forgotPassword = () => {
+    let data = {
+      email: user.account.email,
+    };
+    forgetPassword(data).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        resetPassSuccess();
+      } else {
+        resetPassFailed();
+      }
+    });
+  }
   const showNewPassModal = () => {
     setIsChangePassword(true);
   };
@@ -239,13 +275,20 @@ const App = () => {
     }
 
     let newLoginInfo = {
-      id: user.accountID,
       email: values.email,
+      oldPassword: values.oldPassword,
       newPassword: values.newPassword,
       confirmPassword: values.confirmPassword,
     };
 
-    setIsChangePassword(false);
+    updatePassword(newLoginInfo).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        changePassSuccess();
+        setIsChangePassword(false);
+      } else {
+        changePassFailed();
+      }
+    });
   };
 
   const handleLogout = () => {
@@ -270,6 +313,11 @@ const App = () => {
     },
     {
       key: "3",
+      label: <div onClick={forgotPassword}>Forgot password</div>,
+      icon: <SolutionOutlined />,
+    },
+    {
+      key: "4",
       label: (
         <a href="/" onClick={handleLogout}>
           Log out
@@ -294,21 +342,6 @@ const App = () => {
             className="login-form"
             onFinish={onChangedPassword}
           >
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your email!",
-                },
-              ]}
-            >
-              <Input
-                prefix={<UserOutlined className="site-form-item-icon" />}
-                placeholder="Email"
-              />
-            </Form.Item>
-
             <Form.Item
               name="oldPassword"
               rules={[
