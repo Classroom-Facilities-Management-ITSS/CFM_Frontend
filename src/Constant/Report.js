@@ -47,4 +47,19 @@ async function addNewReport(newReport) {
   return res;
 }
 
-export { getReport, getReportList, addNewReport };
+async function removeReport(id) {
+  let res;
+
+  await axios
+    .delete(`${process.env.REACT_APP_API_URL}/api/v1/report/${id}`)
+    .then((response) => {
+      res = response;
+    })
+    .catch((err) => {
+      res = err;
+    });
+
+  return res;
+}
+
+export { getReport, getReportList, addNewReport, removeReport };

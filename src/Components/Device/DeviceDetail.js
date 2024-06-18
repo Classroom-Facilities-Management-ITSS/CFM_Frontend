@@ -195,7 +195,7 @@ const DeviceDetail = () => {
       {deviceData ? (
         <Space direction="vertical" size={50}>
           <Form colon={false} onFinish={onFinishEdit} autoComplete="off">
-            <Space size={100}>
+            <Space size={25}>
               <Space direction="vertical" size={50}>
                 <Space>
                   <div class="text-2xl font-bold">Device's information</div>
@@ -322,11 +322,11 @@ const DeviceDetail = () => {
                 </Space>
               </Space>
 
-              <div class="ml-10">
+              <div class="">
                 <Image
-                  src={require("../../assets/classroom.png")}
-                  width={200}
-                  height={200}
+                  src={require("../../assets/pc.jpg")}
+                  width={300}
+                  height={300}
                 />
               </div>
             </Space>
