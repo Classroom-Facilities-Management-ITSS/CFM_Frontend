@@ -10,7 +10,7 @@ import Capitalize from "../../hook/capitalize";
 
 import { ClassTable } from "../../Class/ClassList/ClassList";
 
-import { getAcc, renewProfile } from "../../../Constant/User";
+import { getAcc, renewProfile, uploadAvatar, getAvatar } from "../../../Constant/User";
 import { getScheduleByEmail } from "../../../Constant/Schedule";
 
 const UserDetail = () => {
@@ -96,6 +96,37 @@ const UserDetail = () => {
       noChange();
     }
   };
+  const [avatar, setAvatar] = useState(null);
+  const handleUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        const response = await uploadAvatar(file);
+        if (response.status === "success") {
+          message.success("Upload thành công!");
+          const newAvatar = await getAvatar(userData.accountID); // Giả sử response trả về thông tin avatar mới
+          setAvatar(newAvatar);
+        } else {
+          message.error("Upload thất bại!");
+        }
+      } catch (error) {
+        console.error("Error uploading avatar:", error);
+        message.error("Đã xảy ra lỗi khi upload!");
+      }
+    }
+  };
+  useEffect(() => {
+    async function fetchAvatar() {
+      try {
+        const avatarData = await getAvatar(params.accountID);
+        setAvatar(avatarData);
+      } catch (error) {
+        console.error("Error fetching avatar:", error);
+      }
+    }
+    fetchAvatar();
+  }, []);
+    
 
   return (
     <div class="m-10">
@@ -193,13 +224,19 @@ const UserDetail = () => {
                 </Space>
               </Space>
 
-              <div class="ml-10">
-                <Image
-                  src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${userData.accountID}`}
+              <div className="ml-10">
+  <Image
+                  src={`${process.env.REACT_APP_API_URL}?name=${avatar || userData.avatar}`}
                   width={200}
-                  height={200}
-                />
-              </div>
+    height={200}
+  />
+  {editMode && (
+    <div>
+      <input type="file" accept="image/*" onChange={handleUpload} />
+    </div>
+  )}
+</div>
+
             </Space>
 
             <Form.Item>

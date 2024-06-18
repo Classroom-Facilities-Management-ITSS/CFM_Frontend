@@ -1,5 +1,6 @@
 import axios, * as others from "axios";
 
+
 let token = JSON.parse(localStorage.getItem("token"));
 if (token) {
   axios.defaults.headers.common["Authorization"] =
@@ -272,6 +273,25 @@ async function updatePassword(data) {
 
   return res;
 }
+async function uploadAvatar(file) {
+  let formData = new FormData();
+  formData.append("avatar", file);
+
+  let response = await Http.post("/api/v1/avatar", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+}
+
+async function getAvatar(userId) {
+  let response = await Http.get(`/api/v1/avatar/${userId}`);
+  return response.data;
+}
+
+
 
 export {
   getAcc,
@@ -284,4 +304,6 @@ export {
   renewProfile,
   forgetPassword,
   updatePassword,
+  uploadAvatar,
+  getAvatar
 };
