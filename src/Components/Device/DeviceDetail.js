@@ -132,8 +132,9 @@ const DeviceDetail = () => {
   function handleDelete() {
     removeFacility(deviceData.id).then((res) => {
       if (res.status >= 200 && res.status < 300) {
+        console.log("Pass")
         deleteSuccess();
-        nav(`/classList`);
+        //nav(`/classList`);
       } else {
         deleteFail();
       }
@@ -211,10 +212,10 @@ const DeviceDetail = () => {
                     >
                       {editMode ? (
                         <Input
-                          defaultValue={Capitalize(deviceData.name)}
+                          defaultValue={deviceData.name}
                         ></Input>
                       ) : (
-                        <div class="text-xl">{Capitalize(deviceData.name)}</div>
+                        <div class="text-xl">{deviceData.name}</div>
                       )}
                     </Form.Item>
 
