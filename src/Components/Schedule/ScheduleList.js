@@ -7,6 +7,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import {
+  Flex,
   Form,
   Modal,
   Input,
@@ -16,7 +17,11 @@ import {
   Button,
   message,
 } from "antd";
-import { EditOutlined, DownloadOutlined, FilterOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DownloadOutlined,
+  FilterOutlined,
+} from "@ant-design/icons";
 
 import {
   getScheduleByEmail,
@@ -34,6 +39,12 @@ const ScheduleList = () => {
     messageApi.open({
       type: "success",
       content: "Edit finish!",
+    });
+  };
+  const filterFail = (field, value) => {
+    messageApi.open({
+      type: "error",
+      content: `No schedule has ${value} as ${field}`,
     });
   };
   const apiError = () => {
@@ -56,7 +67,7 @@ const ScheduleList = () => {
   };
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-  const [filterSchedule, setFilterSchedule] = useState([]);  
+  const [filterSchedule, setFilterSchedule] = useState([]);
   const [schedule, setSchedule] = useState(null);
   const [classes, setClasses] = useState(null);
 
@@ -156,57 +167,116 @@ const ScheduleList = () => {
     },
     user.account.role == "ADMIN"
       ? {
-        title: "Lecturer",
-        key: "lecturer",
-        render: (_, record) => (
-          <div>{record.lecturer}</div>
-        ),
-      }
+          title: "Lecturer",
+          key: "lecturer",
+          render: (_, record) => <div>{record.lecturer}</div>,
+        }
       : {
-        title: "Note",
-        dataIndex: "note",
-        key: "note",
-      },
+          title: "Note",
+          dataIndex: "note",
+          key: "note",
+        },
   ];
   if (user.account.role == "ADMIN") {
-    listAttribute.push(
-      {
-        title: "Action",
-        key: "action",
-        render: (_, record) => (
-          <Space size="middle">
-            <a
-              onClick={() => {
-                //console.log(record.id)
-                onEdit(record.id);
-              }}
-            >
-              Edit
-            </a>
-            <a
-              onClick={() => {
-                handleDelete(record.id);
-              }}
-            >
-              Delete
-            </a>
-          </Space>
-        ),
-      }
-    )
+    listAttribute.push({
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <a
+            onClick={() => {
+              onEdit(record.id);
+            }}
+          >
+            Edit
+          </a>
+          <a
+            onClick={() => {
+              handleDelete(record.id);
+            }}
+          >
+            Delete
+          </a>
+        </Space>
+      ),
+    });
   }
 
-  const [isFilter, setIsFilter] = useState(false)
+  const [isFilter, setIsFilter] = useState(false);
   function onFilter() {
     setIsFilter(true);
   }
   function onFinishFilter(values) {
-    let isFilter = false;
+    let needFilter = false;
+    let filterList = schedule;
 
     if (values.subject) {
-      isFilter = true;
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.subject.includes(values.subject)
+      );
 
+      if (filterList.length == 0) {
+        filterFail("subject", values.subject);
+        return 0;
+      }
     }
+    if (values.address) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.address.includes(values.address)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("address", values.address);
+        return 0;
+      }
+    }
+    if (values.startTime) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.startTime.includes(values.startTime)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("start time", values.startTime);
+        return 0;
+      }
+    }
+    if (values.endTime) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.endTime.includes(values.endTime)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("end time", values.endTime);
+        return 0;
+      }
+    }
+    if (values.lecturer) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.lecturer.includes(values.lecturer)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("lecturer", values.lecturer);
+        return 0;
+      }
+    }
+
+    if (needFilter) {
+      setIsFilter(false);
+      setFilterSchedule(filterList);
+    } else {
+      setIsFilter(false);
+    }
+  }
+
+  function cancelFilter() {
+    setIsFilter(false);
+    setFilterSchedule([]);
   }
 
   function handleDelete(id) {
@@ -264,17 +334,6 @@ const ScheduleList = () => {
           </Form.Item>
 
           <Form.Item
-            name="time"
-            rules={[
-              {
-                required: false,
-              },
-            ]}
-          >
-            <Input placeholder="Time" />
-          </Form.Item>
-
-          <Form.Item
             name="subject"
             rules={[
               {
@@ -283,6 +342,28 @@ const ScheduleList = () => {
             ]}
           >
             <Input placeholder="Subject" />
+          </Form.Item>
+
+          <Form.Item
+            name="startTime"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="Start at:" />
+          </Form.Item>
+
+          <Form.Item
+            name="endTime"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="End at:" />
           </Form.Item>
 
           <Form.Item
@@ -296,15 +377,16 @@ const ScheduleList = () => {
             <Input placeholder="Lecturer" />
           </Form.Item>
 
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="new-user-form-button"
-            >
-              Confirm
-            </Button>
-          </Form.Item>
+          <Flex style={{ marginTop: 25, marginBottom: 25 }} justify="center" align="center">
+            <Space size={10}>
+              <Button type="primary" htmlType="submit">
+                Confirm
+              </Button>
+              <Button type="" onClick={cancelFilter}>
+                Cancel Filtering
+              </Button>
+            </Space>
+          </Flex>
         </Form>
       </Modal>
 
@@ -325,9 +407,7 @@ const ScheduleList = () => {
               },
             ]}
           >
-            <Input
-              placeholder={scheduleOnEdit.subject}
-            />
+            <Input placeholder={scheduleOnEdit.subject} />
           </Form.Item>
 
           <Form.Item
@@ -340,7 +420,10 @@ const ScheduleList = () => {
               },
             ]}
           >
-            <Select placeholder={scheduleOnEdit.address} options={classes}></Select>
+            <Select
+              placeholder={scheduleOnEdit.address}
+              options={classes}
+            ></Select>
           </Form.Item>
 
           <Form.Item
@@ -352,9 +435,7 @@ const ScheduleList = () => {
               },
             ]}
           >
-            <Input
-              placeholder={scheduleOnEdit.countStudent}
-            />
+            <Input placeholder={scheduleOnEdit.countStudent} />
           </Form.Item>
 
           <Form.Item
@@ -366,9 +447,7 @@ const ScheduleList = () => {
               },
             ]}
           >
-            <Input
-              placeholder={scheduleOnEdit.startTime}
-            />
+            <Input placeholder={scheduleOnEdit.startTime} />
           </Form.Item>
 
           <Form.Item
@@ -380,9 +459,7 @@ const ScheduleList = () => {
               },
             ]}
           >
-            <Input
-              placeholder={scheduleOnEdit.endTime}
-            />
+            <Input placeholder={scheduleOnEdit.endTime} />
           </Form.Item>
 
           <Form.Item>
@@ -427,7 +504,7 @@ const ScheduleList = () => {
         {schedule ? (
           <Table
             scroll={{ y: 600 }}
-            dataSource={schedule}
+            dataSource={filterSchedule.length == 0 ? schedule : filterSchedule}
             columns={listAttribute}
             pagination={{ pageSize: 23 }}
           />

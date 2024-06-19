@@ -618,14 +618,13 @@ const ClassDetail = () => {
                         Submit
                       </Button>
 
-                      <Button type="" htmlType="submit" onClick={handleCancel}>
+                      <Button type="" onClick={handleCancel}>
                         Cancel
                       </Button>
 
                       <Button
                         type=""
                         danger
-                        htmlType="submit"
                         onClick={handleDelete}
                       >
                         Delete

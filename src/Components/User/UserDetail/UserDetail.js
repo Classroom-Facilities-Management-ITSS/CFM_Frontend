@@ -209,7 +209,7 @@ const UserDetail = () => {
                     <Button type="primary" htmlType="submit">
                       Submit
                     </Button>
-                    <Button type="" htmlType="submit" onClick={handleCancel}>
+                    <Button type="" onClick={handleCancel}>
                       Cancel
                     </Button>
                   </Space>

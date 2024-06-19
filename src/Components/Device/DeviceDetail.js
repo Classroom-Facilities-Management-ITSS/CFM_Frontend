@@ -134,7 +134,6 @@ const DeviceDetail = () => {
       if (res.status >= 200 && res.status < 300) {
         console.log("Pass")
         deleteSuccess();
-        //nav(`/classList`);
       } else {
         deleteFail();
       }
@@ -195,7 +194,7 @@ const DeviceDetail = () => {
       {deviceData ? (
         <Space direction="vertical" size={50}>
           <Form colon={false} onFinish={onFinishEdit} autoComplete="off">
-            <Space size={25}>
+            <Space size={100}>
               <Space direction="vertical" size={50}>
                 <Space>
                   <div class="text-2xl font-bold">Device's information</div>
@@ -322,11 +321,11 @@ const DeviceDetail = () => {
                 </Space>
               </Space>
 
-              <div class="">
+              <div class="ml-10">
                 <Image
-                  src={require("../../assets/pc.jpg")}
-                  width={300}
-                  height={300}
+                  src={require("../../assets/classroom.png")}
+                  width={200}
+                  height={200}
                 />
               </div>
             </Space>
@@ -339,14 +338,13 @@ const DeviceDetail = () => {
                       Submit
                     </Button>
 
-                    <Button type="" htmlType="submit" onClick={handleCancel}>
+                    <Button type="" onClick={handleCancel}>
                       Cancel
                     </Button>
 
                     <Button
                       type=""
                       danger
-                      htmlType="submit"
                       onClick={handleDelete}
                     >
                       Delete
