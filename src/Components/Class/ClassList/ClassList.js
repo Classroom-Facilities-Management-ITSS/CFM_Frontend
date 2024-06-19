@@ -14,13 +14,22 @@ import {
   message,
   Flex,
 } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, FilterOutlined } from "@ant-design/icons";
 
 import { getScheduleByEmail } from "../../../Constant/Schedule";
 import { addNewClass, getClassList } from "../../../Constant/Classrooms";
 
 const ClassTable = (props) => {
+  const [messageApi, contextHolder] = message.useMessage();
+  const filterFail = (field, value) => {
+    messageApi.open({
+      type: "error",
+      content: `No schedule has ${value} as ${field}`,
+    });
+  };
+
   const [classesData, setClassesData] = useState(null);
+  const [filterClass, setFilterClass] = useState([]);
 
   useEffect(() => {
     async function getClassess() {
@@ -102,13 +111,119 @@ const ClassTable = (props) => {
     },
   ];
 
+  function onFinishFilter(values) {
+    let needFilter = false;
+    let filterList = classesData;
+
+    if (values.address) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.address.includes(values.address)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("address", values.address);
+        return 0;
+      }
+    }
+    if (values.lastUsed) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.lastUsed.includes(values.lastUsed)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("last used time", values.lastUsed);
+        return 0;
+      }
+    }
+    if (values.facilityAmount) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.facilityAmount.includes(values.facilityAmount)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("number of amount", values.facilityAmount);
+        return 0;
+      }
+    }
+
+    if (needFilter) {
+      props.setFilter(false);
+      setFilterClass(filterList);
+    } else {
+      props.setFilter(false);
+    }
+  }
+
+  function cancelFilter() {
+    props.setFilter(false);
+    setFilterClass([]);
+  }
+
+  const handleCancel = () => {
+    props.setFilter(false);
+  };
+
   return (
-    <Table
-      scroll={{ y: props.scroll ? props.scroll : 600 }}
-      columns={listAttribute}
-      dataSource={classesData}
-      pagination={{ pageSize: props.pageSize ? props.pageSize : 23 }}
-    />
+    <>
+      <Modal
+        title="Filtering Classroom"
+        open={props.filter}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form name="filteringClassroom" onFinish={onFinishFilter}>
+          <Form.Item name="address" style={{ marginTop: 25 }}>
+            <Input placeholder="Address" />
+          </Form.Item>
+
+          <Form.Item
+            name="lastUsed"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="Last used time" />
+          </Form.Item>
+
+          <Form.Item
+            name="facilityAmount"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="Number of facilities" />
+          </Form.Item>
+
+          <Flex
+            style={{ marginTop: 25, marginBottom: 25 }}
+            justify="center"
+            align="center"
+          >
+            <Space size={10}>
+              <Button type="primary" htmlType="submit">
+                Confirm
+              </Button>
+              <Button type="" onClick={cancelFilter}>
+                Cancel Filtering
+              </Button>
+            </Space>
+          </Flex>
+        </Form>
+      </Modal>
+      <Table
+        scroll={{ y: props.scroll ? props.scroll : 600 }}
+        columns={listAttribute}
+        dataSource={filterClass.length == 0 ? classesData : filterClass}
+        pagination={{ pageSize: props.pageSize ? props.pageSize : 23 }}
+      />
+    </>
   );
 };
 
@@ -162,8 +277,8 @@ const ClassList = () => {
     let newClass = {
       address: values.address,
       maxSize: values.maxSize,
-      status: values.status,      
-      lastUsed: now,      
+      status: values.status,
+      lastUsed: now,
       note: "",
     };
 
@@ -177,11 +292,21 @@ const ClassList = () => {
     });
   };
 
+  const [isFilter, setIsFilter] = useState(false);
+  const onFilter = () => {
+    setIsFilter(true);
+  };
+
   return (
     <Space direction="vertical" size={50}>
       {contextHolder}
       <Space id="header-container">
         <div class="text-2xl font-bold">Classrooms Information</div>
+
+        <Button style={{ border: "none" }} onClick={onFilter}>
+          <FilterOutlined style={{ fontSize: 20 }} />
+        </Button>
+
         <Button style={{ border: "none" }} onClick={showAddClassModal}>
           <EditOutlined style={{ fontSize: 20 }} />
         </Button>
@@ -270,9 +395,18 @@ const ClassList = () => {
         {schedule ? (
           <>
             {user.account.role == "ADMIN" ? (
-              <ClassTable list={true}></ClassTable>
+              <ClassTable
+                list={true}
+                filter={isFilter}
+                setFilter={setIsFilter}
+              ></ClassTable>
             ) : (
-              <ClassTable schedule={schedule} list={true}></ClassTable>
+              <ClassTable
+                list={true}
+                schedule={schedule}
+                filter={isFilter}
+                setFilter={setIsFilter}
+              ></ClassTable>
             )}
           </>
         ) : (

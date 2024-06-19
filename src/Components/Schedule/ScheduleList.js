@@ -24,12 +24,14 @@ import {
 } from "@ant-design/icons";
 
 import {
+  addNewSchedule,
   getScheduleByEmail,
   getScheduleList,
   removeSchedule,
   renewSchedule,
 } from "../../Constant/Schedule";
 import { getClassList } from "../../Constant/Classrooms";
+import { getAccList } from "../../Constant/User";
 
 const ScheduleList = () => {
   const nav = useNavigate();
@@ -38,7 +40,7 @@ const ScheduleList = () => {
   const success = () => {
     messageApi.open({
       type: "success",
-      content: "Edit finish!",
+      content: "Done!",
     });
   };
   const filterFail = (field, value) => {
@@ -68,6 +70,8 @@ const ScheduleList = () => {
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [filterSchedule, setFilterSchedule] = useState([]);
+
+  const [userList, setUserList] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const [classes, setClasses] = useState(null);
 
@@ -75,11 +79,26 @@ const ScheduleList = () => {
     async function getSchedule() {
       let list = [];
       let options = [];
+      let options2 = [];
+
+      let userArr = [];
       let classList = [];
 
       if (user.account.role == "ADMIN") {
         list = await getScheduleList();
+
+        userArr = await getAccList();
         classList = await getClassList();
+
+        userArr.map((elem) => {
+          let option2 = {
+            value: elem.accountID,
+            label: elem.fullName,
+          };
+
+          options2.push(option2);
+        });
+        setUserList(options2);
 
         classList.map((elem) => {
           let option = {
@@ -89,7 +108,6 @@ const ScheduleList = () => {
 
           options.push(option);
         });
-
         setClasses(options);
       } else {
         list = await getScheduleByEmail(user.account.email);
@@ -297,6 +315,7 @@ const ScheduleList = () => {
     setIsEdit(true);
   }
   function handleCancel() {
+    setIsAdd(false);
     setIsEdit(false);
     setIsFilter(false);
   }
@@ -311,6 +330,30 @@ const ScheduleList = () => {
     };
 
     renewSchedule(newScheduleInfo).then((res) => {
+      if (res.status >= 200 && res.status < 300) {
+        success();
+        setIsEdit(false);
+      } else {
+        apiError();
+      }
+    });
+  }
+
+  const [isAdd, setIsAdd] = useState(false);
+  function onAdd() {
+    setIsAdd(true);
+  }
+  function onFinishAdd(values) {
+    let newInfo = {
+      subject: values.subject,
+      accountId: values.accountId,
+      classroomId: values.address,
+      countStudent: values.countStudent,
+      startTime: values.startTime,
+      endTime: values.endTime,
+    };
+
+    addNewSchedule(newInfo).then((res) => {
       if (res.status >= 200 && res.status < 300) {
         success();
         setIsEdit(false);
@@ -377,7 +420,11 @@ const ScheduleList = () => {
             <Input placeholder="Lecturer" />
           </Form.Item>
 
-          <Flex style={{ marginTop: 25, marginBottom: 25 }} justify="center" align="center">
+          <Flex
+            style={{ marginTop: 25, marginBottom: 25 }}
+            justify="center"
+            align="center"
+          >
             <Space size={10}>
               <Button type="primary" htmlType="submit">
                 Confirm
@@ -474,6 +521,101 @@ const ScheduleList = () => {
         </Form>
       </Modal>
 
+      <Modal
+        title="Add Schedule"
+        open={isAdd}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form name="addSchedule" onFinish={{onFinishAdd}}>
+          <Form.Item
+            style={{ marginTop: 25 }}
+            name="subject"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Input placeholder="Subject:" />
+          </Form.Item>
+
+          <Form.Item
+            style={{ marginTop: 25 }}
+            name="countStudent"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Input placeholder="Number of students:" />
+          </Form.Item>
+
+          <Form.Item
+            style={{ marginTop: 25 }}
+            name="accountId"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Select placeholder="Lecturer:" options={userList}></Select>
+          </Form.Item>
+
+          <Form.Item
+            style={{ marginTop: 25 }}
+            name="classroomId"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Select placeholder="Location:" options={classes}></Select>
+          </Form.Item>
+
+          <Form.Item
+            name="startTime"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Input placeholder="Start at:" />
+          </Form.Item>
+
+          <Form.Item
+            name="endTime"
+            rules={[
+              {
+                required: true,
+                message: "This section is require!",
+              },
+            ]}
+          >
+            <Input placeholder="End at:" />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="new-user-form-button"
+            >
+              Confirm
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
       <Space id="header-container">
         <div class="text-2xl font-bold">Schedule Information</div>
 
@@ -481,7 +623,7 @@ const ScheduleList = () => {
           <FilterOutlined style={{ fontSize: 20 }} />
         </Button>
 
-        <Button style={{ border: "none" }}>
+        <Button style={{ border: "none" }} onClick={onAdd}>
           <EditOutlined style={{ fontSize: 20 }} />
         </Button>
 

@@ -3,8 +3,13 @@ import "./UserList.css";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { Space, Table, Button, Modal, Form, Input, message } from "antd";
-import { EditOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
+import { Space, Table, Button, Modal, Form, Input, message, Flex } from "antd";
+import {
+  EditOutlined,
+  UserOutlined,
+  LockOutlined,
+  FilterOutlined,
+} from "@ant-design/icons";
 
 import { addNewAcc, getAccList, removeAcc } from "../../../Constant/User";
 
@@ -16,6 +21,12 @@ const UserList = () => {
     messageApi.open({
       type: "success",
       content: "Successfully add new user!",
+    });
+  };
+  const filterFail = (field, value) => {
+    messageApi.open({
+      type: "error",
+      content: `No user has ${value} as ${field}`,
     });
   };
   const passConfirmError = () => {
@@ -44,6 +55,7 @@ const UserList = () => {
   };
 
   const [userList, setUserList] = useState(null);
+  const [filterUser, setFilterUser] = useState([]);
 
   useEffect(() => {
     async function getList() {
@@ -91,7 +103,6 @@ const UserList = () => {
         <a
           onClick={() => {
             handleDelete(record.accountID);
-            //console.log(record.accountID)
           }}
         >
           Delete
@@ -105,6 +116,7 @@ const UserList = () => {
     setIsAddUser(true);
   };
   const handleCancel = () => {
+    setIsFilter(false);
     setIsAddUser(false);
   };
   const onFinishAdd = (values) => {
@@ -128,6 +140,72 @@ const UserList = () => {
     });
   };
 
+  const [isFilter, setIsFilter] = useState(false);
+  function onFilter() {
+    setIsFilter(true);
+  }
+  function onFinishFilter(values) {
+    let needFilter = false;
+    let filterList = userList;
+
+    if (values.name) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.fullName.includes(values.name)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("name", values.name);
+        return 0;
+      }
+    }
+    if (values.role) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.account.role.includes(values.role)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("role", values.role);
+        return 0;
+      }
+    }
+    if (values.email) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.account.email.includes(values.email)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("email", values.email);
+        return 0;
+      }
+    }
+    if (values.active) {
+      needFilter = true;
+      filterList = filterList.filter((elem) =>
+        elem.account.active.includes(values.active)
+      );
+
+      if (filterList.length == 0) {
+        filterFail("active status", values.active);
+        return 0;
+      }
+    }
+
+    if (needFilter) {
+      setIsFilter(false);
+      setFilterUser(filterList);
+    } else {
+      setIsFilter(false);
+    }
+  }
+
+  function cancelFilter() {
+    setIsFilter(false);
+    setFilterUser([]);
+  }
+
   const handleDelete = (id) => {
     removeAcc(id).then((res) => {
       if (res.status >= 200 && res.status < 300) {
@@ -142,8 +220,74 @@ const UserList = () => {
   return (
     <Space direction="vertical" size={50}>
       {contextHolder}
+      <Modal
+        title="Filtering User"
+        open={isFilter}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form name="filteringUser" onFinish={onFinishFilter}>
+          <Form.Item name="name" style={{ marginTop: 25 }}>
+            <Input placeholder="Name" />
+          </Form.Item>
+
+          <Form.Item
+            name="role"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="Role: (ex: ADMIN or USER)" />
+          </Form.Item>
+
+          <Form.Item
+            name="email"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="Email: sample@example.vmail.xyz" />
+          </Form.Item>
+
+          <Form.Item
+            name="active"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input placeholder="Actived or Unactive" />
+          </Form.Item>
+
+          <Flex
+            style={{ marginTop: 25, marginBottom: 25 }}
+            justify="center"
+            align="center"
+          >
+            <Space size={10}>
+              <Button type="primary" htmlType="submit">
+                Confirm
+              </Button>
+              <Button type="" onClick={cancelFilter}>
+                Cancel Filtering
+              </Button>
+            </Space>
+          </Flex>
+        </Form>
+      </Modal>
+
       <Space id="header-container">
         <div class="text-2xl font-bold">Users' Information</div>
+
+        <Button style={{ border: "none" }} onClick={onFilter}>
+          <FilterOutlined style={{ fontSize: 20 }} />
+        </Button>
+
         <Button style={{ border: "none" }} onClick={showAddUserModal}>
           <EditOutlined style={{ fontSize: 20 }} />
         </Button>
@@ -219,7 +363,7 @@ const UserList = () => {
 
         <Table
           scroll={{ y: 700 }}
-          dataSource={userList}
+          dataSource={filterUser.length == 0 ? userList : filterUser}
           columns={userAttribute}
           pagination={{ pageSize: 20 }}
         />

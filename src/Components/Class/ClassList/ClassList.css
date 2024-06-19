@@ -12,3 +12,8 @@
   margin-top: 20px;
   width: 100%;
 }
+
+#filter-button {
+  right: 2.5rem;
+  position: absolute;
+}

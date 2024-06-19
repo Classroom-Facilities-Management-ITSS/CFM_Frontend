@@ -37,6 +37,8 @@ import {
   NotificationOutlined,
 } from "@ant-design/icons";
 
+import Active from "../Active/Active.js";
+
 import Dashboard from "../Dashboard/Dashboard.js";
 import DeviceDetail from "../Device/DeviceDetail.js";
 
@@ -53,7 +55,11 @@ import ClassDetail from "../Class/ClassDetail/ClassDetail.js";
 import useWindowDimensions from "../hook/useWindowDimensions.js";
 
 import { AuthLogin } from "../../Constant/Http.js";
-import { forgetPassword, getProfile, updatePassword } from "../../Constant/User.js";
+import {
+  getProfile,
+  forgetPassword,
+  updatePassword,
+} from "../../Constant/User.js";
 
 const { Header, Content, Sider } = Layout;
 
@@ -185,6 +191,12 @@ const App = () => {
       content: "Wrong email or password, please login again!",
     });
   };
+  const nonActive = () => {
+    messageApi.open({
+      type: "error",
+      content: "Your have not active your account yet! Try again later or active it!"
+    });
+  }
   const passConfirmError = () => {
     messageApi.open({
       type: "error",
@@ -225,7 +237,11 @@ const App = () => {
           });
         })
         .catch((err) => {
-          error();
+          if (err.status == 403) {
+            nonActive();
+          } else {
+            error();
+          }
         });
     }
   }, [logAccount]);
@@ -244,7 +260,7 @@ const App = () => {
       email: values.email,
       password: values.password,
     };
-    console.log(logUser);
+    //console.log(logUser);
 
     setLogAccount(logUser);
   };
@@ -261,7 +277,7 @@ const App = () => {
         resetPassFailed();
       }
     });
-  }
+  };
   const showNewPassModal = () => {
     setIsChangePassword(true);
   };
@@ -391,7 +407,7 @@ const App = () => {
                 htmlType="submit"
                 className="login-form-button"
               >
-                Log in
+                Confirm
               </Button>
             </Form.Item>
           </Form>
@@ -458,6 +474,8 @@ const App = () => {
             >
               {user ? (
                 <Routes>
+                  <Route path="*" element={<Dashboard></Dashboard>}></Route>
+
                   <Route
                     path={"/accountList"}
                     element={<UserList></UserList>}
@@ -488,12 +506,12 @@ const App = () => {
                     element={<DeviceDetail></DeviceDetail>}
                   ></Route>
 
-                  <Route path="*" element={<Dashboard></Dashboard>}></Route>
-
                   <Route
                     path="/reportList"
                     element={<ReportList></ReportList>}
                   ></Route>
+
+                  <Route path="/active" element={<Active></Active>}></Route>
                 </Routes>
               ) : (
                 <Modal
@@ -554,7 +572,10 @@ const App = () => {
                         <Checkbox>Remember me</Checkbox>
                       </Form.Item>
 
-                      <Button className="login-form-forgot" onClick={forgotPassword}>
+                      <Button
+                        className="login-form-forgot"
+                        onClick={forgotPassword}
+                      >
                         Forgot password
                       </Button>
                     </Form.Item>

@@ -273,6 +273,28 @@ async function updatePassword(data) {
   return res;
 }
 
+async function activeAccount(token) {
+  let res;
+
+  await Http.put(
+    `/api/v1/auth/active`,
+    {},
+    {
+      headers: {
+        Authorization: token,
+      },
+    }
+  )
+    .then((response) => {
+      res = response;
+    })
+    .catch((err) => {
+      res = err;
+    });
+
+  return res;
+}
+
 export {
   getAcc,
   getAccList,
@@ -284,4 +306,5 @@ export {
   renewProfile,
   forgetPassword,
   updatePassword,
+  activeAccount,
 };
