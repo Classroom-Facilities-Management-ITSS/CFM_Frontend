@@ -194,9 +194,10 @@ const App = () => {
   const nonActive = () => {
     messageApi.open({
       type: "error",
-      content: "Your have not active your account yet! Try again later or active it!"
+      content:
+        "Your have not active your account yet! Try again later or active it!",
     });
-  }
+  };
   const passConfirmError = () => {
     messageApi.open({
       type: "error",
@@ -246,7 +247,7 @@ const App = () => {
     }
   }, [logAccount]);
 
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -475,122 +476,119 @@ const App = () => {
               {user ? (
                 <Routes>
                   <Route path="*" element={<Dashboard></Dashboard>}></Route>
-
                   <Route
                     path={"/accountList"}
                     element={<UserList></UserList>}
                   ></Route>
-
                   <Route
                     path="/account/:accountID"
                     element={<UserDetail></UserDetail>}
                   ></Route>
-
                   <Route
                     path="/classList"
                     element={<ClassList></ClassList>}
                   ></Route>
-
                   <Route
                     path="/detail/classroom/:classID"
                     element={<ClassDetail></ClassDetail>}
                   ></Route>
-
                   <Route
                     path="/schedule"
                     element={<ScheduleList></ScheduleList>}
                   ></Route>
-
                   <Route
                     path="/detail/classroom/:classID/device/:deviceID"
                     element={<DeviceDetail></DeviceDetail>}
                   ></Route>
-
                   <Route
                     path="/reportList"
                     element={<ReportList></ReportList>}
                   ></Route>
-
-                  <Route path="/active" element={<Active></Active>}></Route>
                 </Routes>
               ) : (
-                <Modal
-                  title="Login"
-                  open={isModalOpen}
-                  onCancel={handleCancel}
-                  footer={null}
-                >
-                  <Form
-                    name="login"
-                    className="login-form"
-                    initialValues={{
-                      remember: true,
-                    }}
-                    onFinish={onFinish}
+                <>
+                  <Routes>
+                    <Route path="/active" element={<Active></Active>}></Route>
+                  </Routes>
+
+                  <Modal
+                    title="Login"
+                    open={isModalOpen}
+                    onCancel={handleCancel}
+                    footer={null}
                   >
-                    <Form.Item
-                      name="email"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your email!",
-                        },
-                      ]}
+                    <Form
+                      name="login"
+                      className="login-form"
+                      initialValues={{
+                        remember: true,
+                      }}
+                      onFinish={onFinish}
                     >
-                      <Input
-                        prefix={
-                          <UserOutlined className="site-form-item-icon" />
-                        }
-                        placeholder="Email"
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      name="password"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your Password!",
-                        },
-                      ]}
-                    >
-                      <Input
-                        prefix={
-                          <LockOutlined className="site-form-item-icon" />
-                        }
-                        type="password"
-                        placeholder="Password"
-                      />
-                    </Form.Item>
-
-                    <Form.Item>
                       <Form.Item
-                        name="remember"
-                        valuePropName="checked"
-                        noStyle
+                        name="email"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input your email!",
+                          },
+                        ]}
                       >
-                        <Checkbox>Remember me</Checkbox>
+                        <Input
+                          prefix={
+                            <UserOutlined className="site-form-item-icon" />
+                          }
+                          placeholder="Email"
+                        />
                       </Form.Item>
 
-                      <Button
-                        className="login-form-forgot"
-                        onClick={forgotPassword}
+                      <Form.Item
+                        name="password"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input your Password!",
+                          },
+                        ]}
                       >
-                        Forgot password
-                      </Button>
-                    </Form.Item>
+                        <Input
+                          prefix={
+                            <LockOutlined className="site-form-item-icon" />
+                          }
+                          type="password"
+                          placeholder="Password"
+                        />
+                      </Form.Item>
 
-                    <Form.Item>
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        className="login-form-button"
-                      >
-                        Log in
-                      </Button>
-                    </Form.Item>
-                  </Form>
-                </Modal>
+                      <Form.Item>
+                        <Form.Item
+                          name="remember"
+                          valuePropName="checked"
+                          noStyle
+                        >
+                          <Checkbox>Remember me</Checkbox>
+                        </Form.Item>
+
+                        <Button
+                          className="login-form-forgot"
+                          onClick={forgotPassword}
+                        >
+                          Forgot password
+                        </Button>
+                      </Form.Item>
+
+                      <Form.Item>
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          className="login-form-button"
+                        >
+                          Log in
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  </Modal>
+                </>
               )}
             </Content>
           </Layout>
